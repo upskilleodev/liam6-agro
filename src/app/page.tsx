@@ -10,10 +10,12 @@ import { OurStory } from "@/components/OurStory";
 import { CTA } from "@/components/CTA";
 import { Footer } from "@/components/Footer";
 import { StickyWhatsApp } from "@/components/StickyWhatsApp";
+import { ScrollToHeroOnLoad } from "@/components/ScrollToHeroOnLoad";
 
 export default function Home() {
   return (
     <>
+      <ScrollToHeroOnLoad />
       <Header />
       <StickyWhatsApp />
       <main className="overflow-x-clip min-w-0 w-full">

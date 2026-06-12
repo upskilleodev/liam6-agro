@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { whatsappMessages } from "@/lib/whatsapp";
-import { Logo } from "./Logo";
+import { LogoMark } from "./icons";
 import { WhatsAppLink } from "./WhatsAppLink";
 
 const navLinks = [
@@ -55,18 +55,14 @@ export function Header() {
         <div className="flex items-center justify-between h-16 lg:h-[4.5rem]">
           <a
             href="#home"
-            className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0 group opacity-95 hover:opacity-100 transition-opacity"
+            className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink-0 group"
           >
-            <Logo
-              variant="gold"
-              onDark
-              className="w-10 h-10 sm:w-10 sm:h-10 shrink-0"
-            />
-            <div className="flex flex-col min-w-0 gap-0.5 sm:gap-0.5">
-              <span className="font-serif text-lg sm:text-xl font-semibold text-white tracking-tight leading-none block">
+            <LogoMark className="w-10 h-10 sm:w-11 sm:h-11 text-gold/85 shrink-0" />
+            <div className="flex flex-col justify-center min-w-0">
+              <span className="font-serif text-xl sm:text-2xl font-semibold text-white tracking-tight leading-none">
                 Liam6Agro
               </span>
-              <span className="text-[10px] sm:text-[10px] tracking-[0.24em] sm:tracking-[0.26em] uppercase text-gold block leading-none pl-[2px] sm:pl-[3px]">
+              <span className="mt-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-gold/90 leading-none">
                 Exports
               </span>
             </div>
@@ -102,7 +98,7 @@ export function Header() {
 
           <button
             type="button"
-            className="lg:hidden relative z-[101] w-11 h-11 flex items-center justify-center text-white rounded-full bg-white/10 border border-white/20 hover:bg-white/15 active:bg-white/20 transition-colors touch-manipulation"
+            className="lg:hidden relative z-[101] w-11 h-11 flex items-center justify-center text-white hover:text-gold transition-colors touch-manipulation"
             onClick={() => setMenuOpen((open) => !open)}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}

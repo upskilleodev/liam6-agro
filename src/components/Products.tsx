@@ -9,6 +9,7 @@ import {
   CATEGORY_DESCRIPTIONS,
   GINGER_PRODUCTS,
   PRODUCT_CATEGORIES,
+  type GingerProduct,
   type ProductCategory,
 } from "@/data/products";
 import { ProductsPlantationDecor } from "./ui/ProductsPlantationDecor";
@@ -26,9 +27,67 @@ function ProductStars() {
   );
 }
 
+function FeaturedProductCard({ product }: { product: GingerProduct }) {
+  return (
+    <article
+      className="group relative bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(93,58,38,0.1)] hover:shadow-[0_20px_48px_-12px_rgba(93,58,38,0.2)] transition-all duration-500 border border-brown-primary/8 sm:hover:-translate-y-1"
+    >
+      <div className="relative aspect-[4/3] sm:aspect-square overflow-hidden bg-brown-dark/5">
+        <Image
+          src={product.image}
+          alt={product.alt}
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          sizes="(max-width: 640px) 92vw, 33vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-brown-dark/65 via-transparent to-transparent" />
+        <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap gap-1.5 sm:gap-2 max-w-[85%]">
+          <span className="px-2 sm:px-3 py-1 bg-green-deep/90 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-bold tracking-wider uppercase rounded-full">
+            Export Grade
+          </span>
+          <span className="px-2 sm:px-3 py-1 bg-orange-accent/90 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-bold tracking-wider uppercase rounded-full">
+            {product.tag}
+          </span>
+        </div>
+        <span className="absolute top-3 right-3 sm:top-4 sm:right-4 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-white/90 text-brown-primary/70 text-[8px] sm:text-[9px] font-bold tracking-wider uppercase rounded-full">
+          {product.category}
+        </span>
+        <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4">
+          <h3 className="font-serif text-xl sm:text-2xl text-white font-semibold drop-shadow-sm">
+            {product.name}
+          </h3>
+        </div>
+      </div>
+      <div className="p-4 sm:p-6 pt-4 sm:pt-5">
+        <ProductStars />
+        <p className="text-brown-primary/65 text-sm leading-relaxed mt-3 mb-5 line-clamp-3 sm:line-clamp-none">
+          {product.description}
+        </p>
+        <WhatsAppLink
+          message={whatsappMessages.product(product.name)}
+          ariaLabel={`Inquire about ${product.name} on WhatsApp`}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-orange-accent hover:text-orange-warm transition-colors group/link"
+        >
+          Inquire Now
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />
+        </WhatsAppLink>
+      </div>
+    </article>
+  );
+}
+
 export function Products() {
   const [activeCategory, setActiveCategory] = useState<ProductCategory | "all">("all");
   const [catalogExpanded, setCatalogExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     setCatalogExpanded(false);
@@ -45,7 +104,11 @@ export function Products() {
   const featured = filtered.filter((p) => p.featured);
   const catalog = filtered.filter((p) => !p.featured);
   const collapsibleCatalog = featured.length > 0 && catalog.length > 0;
-  const showCatalog = catalog.length > 0 && (catalogExpanded || !collapsibleCatalog);
+
+  // On mobile, always collapse the long catalog list until expanded
+  const catalogHidden =
+    catalog.length > 0 && !catalogExpanded && (isMobile || collapsibleCatalog);
+  const showCatalog = catalog.length > 0 && !catalogHidden;
 
   return (
     <section
@@ -80,8 +143,11 @@ export function Products() {
           </WhatsAppLink>
         </div>
 
-        {/* Category filters — horizontal scroll on mobile */}
-        <div className="relative z-10 flex gap-2 mb-8 sm:mb-12 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1 sm:flex-wrap sm:overflow-visible">
+        <div
+          className="relative z-10 flex gap-2 mb-8 sm:mb-12 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1 sm:flex-wrap sm:overflow-visible"
+          role="group"
+          aria-label="Filter products by category"
+        >
           <button
             type="button"
             onClick={() => setActiveCategory("all")}
@@ -118,66 +184,38 @@ export function Products() {
           </p>
         )}
 
-        {/* Featured products */}
         {featured.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 mb-10">
-            {featured.map((product) => (
-              <article
-                key={product.id}
-                className="group relative bg-white/90 backdrop-blur-sm rounded-2xl overflow-hidden shadow-[0_4px_24px_-4px_rgba(93,58,38,0.1)] hover:shadow-[0_20px_48px_-12px_rgba(93,58,38,0.2)] transition-all duration-500 border border-brown-primary/8 hover:-translate-y-1"
-              >
-                <div className="relative aspect-square overflow-hidden bg-brown-dark/5">
-                  <Image
-                    src={product.image}
-                    alt={product.alt}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 1024px) 100vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brown-dark/65 via-transparent to-transparent" />
-                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 flex flex-wrap gap-1.5 sm:gap-2 max-w-[85%]">
-                    <span className="px-2 sm:px-3 py-1 bg-green-deep/90 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-bold tracking-wider uppercase rounded-full">
-                      Export Grade
-                    </span>
-                    <span className="px-2 sm:px-3 py-1 bg-orange-accent/90 backdrop-blur-sm text-white text-[9px] sm:text-[10px] font-bold tracking-wider uppercase rounded-full">
-                      {product.tag}
-                    </span>
-                  </div>
-                  <span className="absolute top-3 right-3 sm:top-4 sm:right-4 px-2 py-0.5 sm:px-2.5 sm:py-1 bg-white/90 text-brown-primary/70 text-[8px] sm:text-[9px] font-bold tracking-wider uppercase rounded-full">
-                    {product.category}
-                  </span>
-                  <div className="absolute bottom-3 left-3 right-3 sm:bottom-4 sm:left-4 sm:right-4">
-                    <h3 className="font-serif text-xl sm:text-2xl text-white font-semibold drop-shadow-sm">
-                      {product.name}
-                    </h3>
-                  </div>
+          <>
+            {/* Mobile — horizontal swipe carousel */}
+            <div
+              className="sm:hidden -mx-4 px-4 overflow-x-auto snap-x snap-mandatory flex gap-4 pb-3 scrollbar-none mb-2"
+              aria-label="Featured products — swipe to browse"
+            >
+              {featured.map((product) => (
+                <div key={product.id} className="snap-start shrink-0 w-[min(92vw,360px)]">
+                  <FeaturedProductCard product={product} />
                 </div>
-                <div className="p-4 sm:p-6 pt-4 sm:pt-5">
-                  <ProductStars />
-                  <p className="text-brown-primary/65 text-sm leading-relaxed mt-3 mb-5">
-                    {product.description}
-                  </p>
-                <WhatsAppLink
-                  message={whatsappMessages.product(product.name)}
-                  ariaLabel={`Inquire about ${product.name} on WhatsApp`}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-orange-accent hover:text-orange-warm transition-colors group/link"
-                >
-                  Inquire Now
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-1" />
-                </WhatsAppLink>
-                </div>
-              </article>
-            ))}
-          </div>
+              ))}
+            </div>
+            <p className="sm:hidden text-center text-[11px] text-brown-primary/45 font-medium mb-8">
+              Swipe sideways to browse featured products
+            </p>
+
+            {/* Desktop — grid */}
+            <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-7 mb-10">
+              {featured.map((product) => (
+                <FeaturedProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </>
         )}
 
-        {/* Expand to view more catalog products */}
-        {collapsibleCatalog && !catalogExpanded && (
+        {catalogHidden && (
           <div className="flex justify-center mt-2 mb-4">
             <button
               type="button"
               onClick={() => setCatalogExpanded(true)}
-              className="group inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white/90 border border-brown-primary/15 rounded-full text-sm font-semibold text-brown-primary shadow-sm hover:border-orange-accent/45 hover:shadow-md transition-all w-full sm:w-auto max-w-md mx-auto"
+              className="group inline-flex items-center justify-center gap-2.5 px-6 py-3.5 bg-white/90 border border-brown-primary/15 rounded-full text-sm font-semibold text-brown-primary shadow-sm hover:border-orange-accent/45 hover:shadow-md transition-all w-full sm:w-auto max-w-md mx-auto touch-manipulation"
               aria-expanded={false}
             >
               View more ginger products
@@ -189,10 +227,9 @@ export function Products() {
           </div>
         )}
 
-        {/* Catalog grid */}
         {showCatalog && (
           <div className="animate-fade-up">
-            {collapsibleCatalog && (
+            {(collapsibleCatalog || isMobile) && (
               <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <h3 className="font-serif text-xl text-brown-primary font-semibold">
                   More Ginger Products
@@ -200,7 +237,7 @@ export function Products() {
                 <button
                   type="button"
                   onClick={() => setCatalogExpanded(false)}
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-brown-primary/60 hover:text-orange-accent transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-brown-primary/60 hover:text-orange-accent transition-colors touch-manipulation"
                   aria-expanded={true}
                 >
                   Show less
@@ -250,6 +287,23 @@ export function Products() {
         {filtered.length === 0 && (
           <p className="text-center text-brown-primary/50 py-12">No products in this category.</p>
         )}
+
+        <div className="mt-10 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+          <a
+            href="#global-reach"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-green-deep text-white rounded-full text-sm font-semibold shadow-md hover:bg-green-forest transition-colors w-full sm:w-auto touch-manipulation"
+          >
+            Continue to Global Reach
+            <ArrowRight className="w-4 h-4" />
+          </a>
+          <WhatsAppLink
+            message={whatsappMessages.catalog}
+            ariaLabel="Request full catalog on WhatsApp"
+            className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-brown-primary/70 hover:text-orange-accent transition-colors touch-manipulation"
+          >
+            Or request full catalog
+          </WhatsAppLink>
+        </div>
       </div>
     </section>
   );

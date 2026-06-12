@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -48,6 +49,9 @@ export default function RootLayout({
       className={`${dmSans.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans text-brown-primary bg-cream">
+        <Script id="scroll-to-hero" strategy="beforeInteractive">
+          {`if("scrollRestoration" in history){history.scrollRestoration="manual"}if(location.hash){history.replaceState(null,"",location.pathname+location.search)}window.scrollTo(0,0)`}
+        </Script>
         {children}
       </body>
     </html>

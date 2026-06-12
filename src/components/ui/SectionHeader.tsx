@@ -1,6 +1,7 @@
 type SectionHeaderProps = {
   eyebrow: string;
   title: string;
+  titleId?: string;
   description?: string;
   align?: "left" | "center";
   light?: boolean;
@@ -9,6 +10,7 @@ type SectionHeaderProps = {
 export function SectionHeader({
   eyebrow,
   title,
+  titleId,
   description,
   align = "left",
   light = false,
@@ -31,6 +33,7 @@ export function SectionHeader({
         <span className="h-px w-8 bg-orange-accent" aria-hidden="true" />
       </div>
       <h2
+        id={titleId}
         className={`font-serif text-[clamp(1.65rem,5vw,3.25rem)] leading-[1.12] font-semibold tracking-tight ${
           light ? "text-white" : "text-brown-primary"
         }`}
@@ -39,8 +42,8 @@ export function SectionHeader({
       </h2>
       {description && (
         <p
-          className={`mt-4 text-base sm:text-lg leading-relaxed ${
-            light ? "text-white/75" : "text-brown-primary/65"
+          className={`mt-4 text-[15px] sm:text-lg leading-relaxed ${
+            light ? "text-white/90" : "text-brown-primary/65"
           }`}
         >
           {description}

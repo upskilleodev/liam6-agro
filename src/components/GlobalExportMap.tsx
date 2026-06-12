@@ -24,6 +24,17 @@ import {
 import { SectionHeader } from "./ui/SectionHeader";
 import { GlobeIcon, MapPinIcon } from "./icons";
 
+/** Orthographic globe — Karnataka at the center of the view */
+const ORTHOGRAPHIC_ROTATE: [number, number, number] = [
+  -ORIGIN.coordinates[0],
+  -ORIGIN.coordinates[1],
+  0,
+];
+
+function getGlobeScale(size: number) {
+  return Math.round(size * 0.76);
+}
+
 const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
 
 const DEST_BY_ISO = new Map(EXPORT_DESTINATIONS.map((d) => [d.iso, d]));
@@ -71,14 +82,17 @@ const MapCountry = memo(function MapCountry({
       onMouseEnter={() => {
         if (iso && (isExport || isOrigin)) onActivate(iso);
       }}
+      onClick={() => {
+        if (iso && (isExport || isOrigin)) onActivate(iso);
+      }}
       style={{
         ...geographyStyle,
         default: {
           ...geographyStyle.default,
           fill,
-          fillOpacity: isHighlighted || isOrigin ? 1 : isExport ? 0.75 : 0.35,
-          stroke: isHighlighted ? "#f9f7f2" : "#c9a962",
-          strokeWidth: isHighlighted ? 0.8 : 0.35,
+          fillOpacity: isHighlighted || isOrigin ? 1 : isExport ? 0.8 : 0.4,
+          stroke: isHighlighted ? "#f9f7f2" : "#e2c88a",
+          strokeWidth: isHighlighted ? 0.8 : 0.4,
         },
         hover: {
           ...geographyStyle.hover,
@@ -104,7 +118,7 @@ function ExportArcs({ activeIso }: { activeIso: string | null }) {
   const { projection } = useMapContext();
 
   return (
-    <g className="export-arcs" fill="none">
+    <g className="export-arcs" fill="none" aria-hidden="true">
       {EXPORT_DESTINATIONS.map((dest) => {
         const start = projection(ORIGIN.coordinates);
         const end = projection(dest.coordinates);
@@ -122,8 +136,8 @@ function ExportArcs({ activeIso }: { activeIso: string | null }) {
             key={dest.iso}
             d={`M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`}
             stroke={REGION_COLORS[dest.region]}
-            strokeWidth={isActive ? 1.8 : 1}
-            strokeOpacity={dimmed ? 0.08 : isActive ? 0.7 : 0.28}
+            strokeWidth={isActive ? 3 : 2.2}
+            strokeOpacity={dimmed ? 0.18 : isActive ? 0.85 : 0.45}
           />
         );
       })}
@@ -145,11 +159,15 @@ function DestinationMarkers({
           onClick={() => onSelect(ORIGIN.iso)}
           className="cursor-pointer"
           role="button"
+          tabIndex={0}
           aria-label={ORIGIN.name}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") onSelect(ORIGIN.iso);
+          }}
         >
-          <circle r={14} fill="#d4843e" opacity={0.2} className="animate-map-pulse" />
-          <circle r={8} fill="#d4843e" stroke="#f9f7f2" strokeWidth={2} />
-          <circle r={3} fill="#f9f7f2" />
+          <circle r={16} fill="#d4843e" opacity={0.25} className="animate-map-pulse" />
+          <circle r={9} fill="#d4843e" stroke="#f9f7f2" strokeWidth={2} />
+          <circle r={3.5} fill="#f9f7f2" />
         </g>
       </Marker>
 
@@ -164,17 +182,22 @@ function DestinationMarkers({
               onClick={() => onSelect(dest.iso)}
               className="cursor-pointer"
               role="button"
+              tabIndex={0}
               aria-label={dest.name}
-              opacity={dimmed ? 0.35 : 1}
+              aria-pressed={isActive}
+              opacity={dimmed ? 0.45 : 1}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") onSelect(dest.iso);
+              }}
             >
               {isActive && (
-                <circle r={10} fill={color} opacity={0.25} className="animate-map-pulse" />
+                <circle r={12} fill={color} opacity={0.3} className="animate-map-pulse" />
               )}
               <circle
-                r={isActive ? 5 : 3.5}
+                r={isActive ? 6 : 4.5}
                 fill={color}
                 stroke="#f9f7f2"
-                strokeWidth={1.5}
+                strokeWidth={1.8}
               />
             </g>
           </Marker>
@@ -184,26 +207,44 @@ function DestinationMarkers({
   );
 }
 
-function getMapScale(width: number) {
-  if (width < 480) return 95;
-  if (width < 640) return 110;
-  if (width < 1024) return 130;
-  return 155;
-}
-
 export function GlobalExportMap() {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
   const [activeIso, setActiveIso] = useState<string | null>(null);
   const [regionFilter, setRegionFilter] = useState<ExportRegion | "all">("all");
   const [mapReady, setMapReady] = useState(false);
-  const [mapScale, setMapScale] = useState(155);
+  const [mapDimensions, setMapDimensions] = useState({ width: 360, height: 360 });
+  const [isMobile, setIsMobile] = useState(false);
+  const [marketsExpanded, setMarketsExpanded] = useState(false);
 
   useEffect(() => {
-    const update = () => setMapScale(getMapScale(window.innerWidth));
+    const update = () => setIsMobile(window.innerWidth < 640);
     update();
     setMapReady(true);
     window.addEventListener("resize", update, { passive: true });
     return () => window.removeEventListener("resize", update);
   }, []);
+
+  useEffect(() => {
+    const el = mapContainerRef.current;
+    if (!el || !mapReady) return;
+
+    const updateSize = () => {
+      const width = el.clientWidth;
+      const height = el.clientHeight;
+      if (width > 0 && height > 0) {
+        setMapDimensions({ width, height });
+      }
+    };
+
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [mapReady]);
+
+  useEffect(() => {
+    setMarketsExpanded(false);
+  }, [regionFilter]);
 
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -245,40 +286,54 @@ export function GlobalExportMap() {
     return EXPORT_DESTINATIONS.find((d) => d.iso === activeIso) ?? null;
   }, [activeIso]);
 
+  const MOBILE_MARKETS_PREVIEW = 6;
+  const visibleMarkets =
+    isMobile && !marketsExpanded
+      ? filteredDestinations.slice(0, MOBILE_MARKETS_PREVIEW)
+      : filteredDestinations;
+  const hiddenMarketsCount = filteredDestinations.length - MOBILE_MARKETS_PREVIEW;
+  const globeScale = getGlobeScale(Math.min(mapDimensions.width, mapDimensions.height));
+
   return (
     <section
       id="global-reach"
-      className="relative py-14 sm:py-20 lg:py-32 overflow-hidden grain"
+      aria-labelledby="global-reach-heading"
+      className="relative py-14 sm:py-20 lg:py-32 pb-24 sm:pb-20 lg:pb-32 overflow-hidden"
     >
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
         <Image
           src={backgrounds.trust}
           alt=""
           fill
-          className="object-cover scale-105"
+          className="object-cover scale-105 opacity-40"
           sizes="100vw"
-          aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-green-deep/95 via-green-forest/92 to-green-deep/98" />
+        <div className="absolute inset-0 bg-green-deep/94" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           eyebrow="Global Ginger Export"
           title="Our Reach Across the World"
+          titleId="global-reach-heading"
           description="From Karnataka's fertile farms, we export premium ginger to 28+ countries — traceable supply routes spanning the Americas, Europe, Middle East, and Asia-Pacific."
           align="center"
           light
         />
 
-        <div className="mt-8 sm:mt-10 flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-none justify-start sm:justify-center sm:flex-wrap sm:overflow-visible -mx-1 px-1">
+        <div
+          className="mt-6 sm:mt-10 flex gap-2 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1 sm:flex-wrap sm:justify-center sm:overflow-visible"
+          role="group"
+          aria-label="Filter export regions"
+        >
           <button
             type="button"
             onClick={() => setRegionFilter("all")}
-            className={`px-3.5 sm:px-4 py-2.5 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation cursor-pointer ${
+            aria-pressed={regionFilter === "all"}
+            className={`px-4 py-2.5 text-xs sm:text-sm font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation ${
               regionFilter === "all"
-                ? "bg-orange-accent text-white border-orange-accent"
-                : "bg-white/8 text-white/70 border-white/15 hover:border-gold/40"
+                ? "bg-orange-accent text-white border-orange-accent shadow-md"
+                : "bg-white/18 text-white border-white/35 hover:bg-white/25"
             }`}
           >
             All Regions
@@ -288,71 +343,79 @@ export function GlobalExportMap() {
               key={region}
               type="button"
               onClick={() => setRegionFilter(region)}
-              className={`px-3.5 sm:px-4 py-2.5 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation cursor-pointer ${
+              aria-pressed={regionFilter === region}
+              className={`px-4 py-2.5 text-xs sm:text-sm font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation ${
                 regionFilter === region
-                  ? "bg-white/15 text-white border-gold/50"
-                  : "bg-white/8 text-white/70 border-white/15 hover:border-gold/40"
+                  ? "bg-white text-green-deep border-white shadow-md"
+                  : "bg-white/18 text-white border-white/35 hover:bg-white/25"
               }`}
-              style={
-                regionFilter === region
-                  ? { borderColor: REGION_COLORS[region], color: REGION_COLORS[region] }
-                  : undefined
-              }
             >
               {region}
             </button>
           ))}
         </div>
 
-        <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
-          {/* Map */}
+        <div className="mt-6 sm:mt-10 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-10 items-start">
+          {/* Map first on mobile */}
           <div
-            className="lg:col-span-8 relative rounded-2xl overflow-hidden border border-white/10 bg-green-deep/40 backdrop-blur-sm shadow-2xl shadow-black/30 min-h-[220px]"
+            className="lg:col-span-8 lg:col-start-1 order-1 relative rounded-xl sm:rounded-2xl overflow-hidden border border-white/30 bg-[#142e28] shadow-2xl shadow-black/30"
             onMouseEnter={cancelScheduledClear}
             onMouseLeave={scheduleClear}
           >
-            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-green-deep/80 border border-gold/30 text-gold text-[10px] sm:text-xs font-semibold tracking-wider uppercase backdrop-blur-sm max-w-[calc(100%-1rem)]">
-              <MapPinIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
-              <span className="truncate">Origin: Karnataka</span>
+            <div
+              ref={mapContainerRef}
+              className="relative w-full aspect-square sm:aspect-[16/10] bg-[#142e28]"
+            >
+              <div
+                className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-lg bg-green-deep/95 border border-gold/55 text-gold-light text-sm sm:text-base font-bold tracking-wide uppercase shadow-lg max-w-[calc(100%-1.5rem)]"
+              >
+                <MapPinIcon className="w-5 h-5 shrink-0" aria-hidden="true" />
+                <span>Origin: Karnataka</span>
+              </div>
+
+              {mapReady && (
+                <ComposableMap
+                  projection="geoOrthographic"
+                  projectionConfig={{
+                    rotate: ORTHOGRAPHIC_ROTATE,
+                    scale: globeScale,
+                  }}
+                  width={mapDimensions.width}
+                  height={mapDimensions.height}
+                  className="w-full h-full block touch-pan-y"
+                  aria-label="World map showing Liam6Agro export destinations"
+                >
+                  <Sphere fill="#142e28" stroke="#6d9078" strokeWidth={0.9} />
+                  <Geographies geography={GEO_URL}>
+                    {({ geographies }) =>
+                      geographies.map((geo) => (
+                        <MapCountry
+                          key={geo.rsmKey}
+                          geography={geo}
+                          activeIso={activeIso}
+                          onActivate={activateCountry}
+                        />
+                      ))
+                    }
+                  </Geographies>
+
+                  <ExportArcs activeIso={activeIso} />
+                  <DestinationMarkers activeIso={activeIso} onSelect={activateCountry} />
+                </ComposableMap>
+              )}
             </div>
 
-            {mapReady ? (
-              <ComposableMap
-                projection="geoEqualEarth"
-                projectionConfig={{ scale: mapScale, center: [20, 5] }}
-                width={800}
-                height={480}
-                className="w-full h-auto touch-pan-y"
-              >
-                <Sphere fill="#142e28" stroke="#2d4f3e" strokeWidth={0.5} />
-                <Geographies geography={GEO_URL}>
-                  {({ geographies }) =>
-                    geographies.map((geo) => (
-                      <MapCountry
-                        key={geo.rsmKey}
-                        geography={geo}
-                        activeIso={activeIso}
-                        onActivate={activateCountry}
-                      />
-                    ))
-                  }
-                </Geographies>
-
-                <ExportArcs activeIso={activeIso} />
-                <DestinationMarkers activeIso={activeIso} onSelect={activateCountry} />
-              </ComposableMap>
-            ) : (
-              <div
-                className="w-full aspect-[5/3] bg-[#142e28]"
-                aria-hidden="true"
-              />
-            )}
-
-            <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 hidden sm:flex flex-wrap gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-green-deep/70 backdrop-blur-sm border border-white/10">
+            <div
+              className="px-4 py-3.5 sm:py-3 bg-green-deep border-t border-white/25 grid grid-cols-2 gap-x-4 gap-y-2.5 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-5 sm:gap-y-2"
+              aria-label="Region legend"
+            >
               {REGION_LABELS.map((region) => (
-                <div key={region} className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-white/70">
+                <div
+                  key={region}
+                  className="flex items-center gap-2.5 text-sm sm:text-base text-white font-semibold"
+                >
                   <span
-                    className="w-2.5 h-2.5 rounded-full"
+                    className="w-3.5 h-3.5 rounded-full shrink-0 ring-2 ring-white/35"
                     style={{ backgroundColor: REGION_COLORS[region] }}
                   />
                   {region}
@@ -361,86 +424,79 @@ export function GlobalExportMap() {
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-4 flex flex-col gap-6">
-            <div className="p-6 rounded-2xl bg-white/8 border border-white/12 backdrop-blur-md">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-orange-accent/20 flex items-center justify-center text-gold">
+          {/* Sidebar below map on mobile */}
+          <div className="lg:col-span-4 lg:col-start-9 order-2 flex flex-col gap-4 sm:gap-5">
+            <div className="p-5 sm:p-6 rounded-2xl bg-white/14 border border-white/25 shadow-lg shadow-black/20">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-11 h-11 rounded-xl bg-orange-accent/30 flex items-center justify-center text-gold-light shrink-0">
                   <GlobeIcon className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-serif text-2xl text-white font-semibold">28+</p>
-                  <p className="text-[10px] tracking-[0.15em] uppercase text-white/50 font-semibold">
+                  <p className="font-serif text-3xl text-white font-semibold leading-none">28+</p>
+                  <p className="text-xs tracking-[0.12em] uppercase text-white/85 font-semibold mt-1">
                     Export Countries
                   </p>
                 </div>
               </div>
-              <p className="text-white/60 text-sm leading-relaxed">
+              <p className="text-white/90 text-[15px] sm:text-base leading-relaxed">
                 Premium ginger, ginger coffee, and spices — cold-chain shipped from Mangalore &
                 Chennai ports to importers worldwide.
               </p>
             </div>
 
-            <div className="relative min-h-[148px]">
-              <div
-                className={`p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md transition-opacity duration-150 ${
-                  activeDestination
-                    ? "opacity-0 pointer-events-none absolute inset-0"
-                    : "opacity-100"
-                }`}
-              >
-                <p className="text-white/50 text-sm">
-                  Hover or tap a country on the map to explore our export destinations. Orange
-                  marker shows our origin in Karnataka, India.
-                </p>
-              </div>
-              <div
-                className={`p-6 rounded-2xl bg-orange-accent/15 border border-orange-accent/30 backdrop-blur-md transition-opacity duration-150 ${
-                  activeDestination
-                    ? "opacity-100"
-                    : "opacity-0 pointer-events-none absolute inset-0"
-                }`}
-              >
-                {activeDestination && (
-                  <>
-                    <p className="text-gold text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
-                      {activeDestination.region}
-                    </p>
-                    <h3 className="font-serif text-2xl text-white font-semibold mb-2">
-                      {activeDestination.name}
-                    </h3>
-                    <p className="text-white/65 text-sm leading-relaxed">
-                      Active export market for Liam6Agro premium ginger products — fresh rhizomes,
-                      powder, dried slices, and spice blends.
-                    </p>
-                  </>
-                )}
-              </div>
+            <div
+              className="p-5 sm:p-6 rounded-2xl border shadow-lg shadow-black/15 min-h-[120px]"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {activeDestination ? (
+                <div className="bg-orange-accent/20 border border-orange-accent/40 rounded-2xl p-5 sm:p-6 -m-5 sm:-m-6">
+                  <p className="text-gold-light text-xs font-bold tracking-[0.15em] uppercase mb-2">
+                    {activeDestination.region}
+                  </p>
+                  <h3 className="font-serif text-2xl text-white font-semibold mb-2">
+                    {activeDestination.name}
+                  </h3>
+                  <p className="text-white/90 text-[15px] leading-relaxed">
+                    Active export market for Liam6Agro premium ginger — fresh rhizomes, powder,
+                    dried slices, and spice blends.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-white/12 border border-white/20 rounded-2xl p-5 sm:p-6 -m-5 sm:-m-6">
+                  <p className="text-white/90 text-[15px] sm:text-base leading-relaxed">
+                    Tap a country on the map or pick from the list below to explore our export
+                    destinations. The orange marker shows our origin in Karnataka, India.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div
-              className="p-4 sm:p-5 rounded-2xl bg-white/6 border border-white/10 backdrop-blur-md max-h-[240px] sm:max-h-[280px] overflow-y-auto"
+              className="p-4 sm:p-5 rounded-2xl bg-white/12 border border-white/22 max-h-[220px] sm:max-h-[280px] overflow-y-auto"
               onMouseEnter={cancelScheduledClear}
               onMouseLeave={scheduleClear}
             >
-              <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-gold mb-3">
+              <p className="text-xs font-bold tracking-[0.15em] uppercase text-gold-light mb-3">
                 {regionFilter === "all" ? "All Markets" : regionFilter}
               </p>
-              <ul className="space-y-2">
-                {filteredDestinations.map((dest) => (
+              <ul className="space-y-1">
+                {visibleMarkets.map((dest) => (
                   <li key={dest.iso}>
                     <button
                       type="button"
+                      onClick={() => activateCountry(dest.iso)}
                       onMouseEnter={() => activateCountry(dest.iso)}
                       onFocus={() => activateCountry(dest.iso)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-sm ${
+                      aria-pressed={activeIso === dest.iso}
+                      className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left text-base touch-manipulation ${
                         activeIso === dest.iso
-                          ? "bg-white/12 text-white"
-                          : "text-white/60 hover:bg-white/6 hover:text-white/90"
+                          ? "bg-white/20 text-white font-medium"
+                          : "text-white/90 hover:bg-white/10 hover:text-white"
                       }`}
                     >
                       <span
-                        className="w-2 h-2 rounded-full shrink-0"
+                        className="w-3 h-3 rounded-full shrink-0 ring-1 ring-white/40"
                         style={{ backgroundColor: REGION_COLORS[dest.region] }}
                       />
                       {dest.name}
@@ -448,6 +504,24 @@ export function GlobalExportMap() {
                   </li>
                 ))}
               </ul>
+              {isMobile && !marketsExpanded && hiddenMarketsCount > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setMarketsExpanded(true)}
+                  className="mt-3 w-full py-3 text-sm font-semibold text-gold-light border border-white/25 rounded-lg touch-manipulation"
+                >
+                  Show {hiddenMarketsCount} more countries
+                </button>
+              )}
+              {isMobile && marketsExpanded && filteredDestinations.length > MOBILE_MARKETS_PREVIEW && (
+                <button
+                  type="button"
+                  onClick={() => setMarketsExpanded(false)}
+                  className="mt-3 w-full py-2 text-sm font-semibold text-white/70 touch-manipulation"
+                >
+                  Show less
+                </button>
+              )}
             </div>
           </div>
         </div>
