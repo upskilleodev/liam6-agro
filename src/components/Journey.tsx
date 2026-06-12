@@ -9,6 +9,11 @@ import { SectionHeader } from "./ui/SectionHeader";
 import { ArrowRight } from "./icons";
 
 const STEP_COUNT = JOURNEY_STEPS.length;
+const MOBILE_MQ = "(max-width: 639px)";
+
+function isMobileViewport() {
+  return typeof window !== "undefined" && window.matchMedia(MOBILE_MQ).matches;
+}
 
 function getScrollPerStepVh() {
   if (typeof window === "undefined") return 50;
@@ -46,26 +51,22 @@ export function Journey() {
   const activeStepRef = useRef(0);
 
   const [activeStep, setActiveStep] = useState(0);
-  const [isInView, setIsInView] = useState(false);
   const [scrollPerStepVh, setScrollPerStepVh] = useState(50);
 
   activeStepRef.current = activeStep;
 
   const snapToStep = useCallback((index: number) => {
+    activeStepRef.current = index;
+    setActiveStep(index);
+
+    if (isMobileViewport()) return;
+
     const section = sectionRef.current;
-    if (!section) {
-      activeStepRef.current = index;
-      setActiveStep(index);
-      return;
-    }
+    if (!section) return;
 
     const { scrollable, pinScrollStart } = getScrollMetrics(section, stickyRef.current);
     const y = pinScrollStart + stepProgress(index) * scrollable;
-
     window.scrollTo({ top: y, behavior: "smooth" });
-
-    activeStepRef.current = index;
-    setActiveStep(index);
   }, []);
 
   const goNext = useCallback(() => {
@@ -92,34 +93,26 @@ export function Journey() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
-      { threshold: 0.08, rootMargin: "-64px 0px 0px 0px" }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  // Sync active step from scroll position only — no auto snap (that caused shake/jank).
+  // Desktop only — mobile skips scroll scrub (iOS sticky + scroll sync causes shake).
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
 
     let rafId = 0;
+    let metrics = getScrollMetrics(section, stickyRef.current);
+
+    const refreshMetrics = () => {
+      metrics = getScrollMetrics(section, stickyRef.current);
+    };
 
     const syncStepFromScroll = () => {
       rafId = 0;
+      if (isMobileViewport()) return;
 
-      const { scrollable, pinScrollStart } = getScrollMetrics(section, stickyRef.current);
-      if (scrollable <= 0) return;
+      const scrolled = window.scrollY - metrics.pinScrollStart;
+      if (metrics.scrollable <= 0) return;
 
-      const scrolled = window.scrollY - pinScrollStart;
-      const progress = Math.max(0, Math.min(1, scrolled / scrollable));
+      const progress = Math.max(0, Math.min(1, scrolled / metrics.scrollable));
       const step = progressToStep(progress);
 
       if (step !== activeStepRef.current) {
@@ -129,14 +122,18 @@ export function Journey() {
     };
 
     const onScroll = () => {
+      if (isMobileViewport()) return;
       if (!rafId) rafId = requestAnimationFrame(syncStepFromScroll);
     };
 
+    refreshMetrics();
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", refreshMetrics, { passive: true });
     syncStepFromScroll();
 
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", refreshMetrics);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, [scrollPerStepVh]);
@@ -145,10 +142,13 @@ export function Journey() {
     <section
       ref={sectionRef}
       id="journey"
-      className="relative overflow-x-clip pattern-leaves"
-      style={{
-        height: `calc(100dvh - 4rem + ${(STEP_COUNT - 1) * scrollPerStepVh}dvh)`,
-      }}
+      className="journey-scroll-section relative overflow-x-clip pattern-leaves min-h-[calc(100dvh-4rem)]"
+      style={
+        {
+          "--journey-steps": STEP_COUNT,
+          "--journey-step-vh": scrollPerStepVh,
+        } as React.CSSProperties
+      }
     >
       <SectionBackground
         src={backgrounds.journey}
@@ -160,12 +160,10 @@ export function Journey() {
 
       <div
         ref={stickyRef}
-        className="sticky top-16 lg:top-[4.5rem] z-10 h-[calc(100dvh-4rem)] lg:h-[calc(100dvh-4.5rem)] flex flex-col py-3 sm:py-5"
+        className="journey-sticky-panel z-10 flex flex-col py-3 sm:py-5"
       >
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 flex flex-col flex-1 min-h-0 w-full gap-3 sm:gap-4">
-          <div
-            className={`shrink-0 transition-opacity duration-500 ${isInView ? "opacity-100" : "opacity-0"}`}
-          >
+          <div className="shrink-0">
             <SectionHeader
               align="center"
               eyebrow="Farm to World Export"
@@ -174,9 +172,7 @@ export function Journey() {
             />
           </div>
 
-          <div
-            className={`flex-1 min-h-0 flex flex-col transition-opacity duration-500 delay-100 ${isInView ? "opacity-100" : "opacity-0"}`}
-          >
+          <div className="flex-1 min-h-0 flex flex-col max-sm:flex-none">
             <JourneyScrollStage
               steps={JOURNEY_STEPS}
               activeStep={activeStep}
@@ -186,9 +182,7 @@ export function Journey() {
             />
           </div>
 
-          <div
-            className={`shrink-0 flex items-center justify-center pb-1 transition-opacity duration-500 ${isInView ? "opacity-100" : "opacity-0"}`}
-          >
+          <div className="shrink-0 flex items-center justify-center pb-1">
             <a
               href="#products"
               className="inline-flex items-center gap-2 text-sm font-semibold text-green-deep hover:text-green-forest transition-colors"

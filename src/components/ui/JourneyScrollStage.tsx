@@ -31,7 +31,7 @@ export function JourneyScrollStage({
   return (
     <div className="flex flex-col flex-1 min-h-0 gap-3">
       <div
-        className="relative flex-1 min-h-[min(58vh,520px)] sm:min-h-[min(62vh,560px)] rounded-2xl overflow-hidden shadow-[0_20px_50px_-24px_rgba(44,24,16,0.45)] ring-1 ring-brown-primary/10"
+        className="relative flex-1 min-h-[min(52vh,440px)] sm:min-h-[min(62vh,560px)] rounded-2xl overflow-hidden shadow-[0_20px_50px_-24px_rgba(44,24,16,0.45)] ring-1 ring-brown-primary/10"
       >
         <div className="absolute inset-0">
           <Image
@@ -132,7 +132,10 @@ export function JourneyScrollStage({
         </div>
       </div>
 
-      <p className="text-center text-[11px] text-brown-primary/45 font-medium tracking-wide">
+      <p className="text-center text-[11px] text-brown-primary/45 font-medium tracking-wide sm:hidden">
+        Tap the arrows or dots to explore each step
+      </p>
+      <p className="text-center text-[11px] text-brown-primary/45 font-medium tracking-wide hidden sm:block">
         Scroll to move through the journey
       </p>
     </div>

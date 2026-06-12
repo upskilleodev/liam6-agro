@@ -1,21 +1,15 @@
-import Image from "next/image";
 import { sections } from "@/lib/images";
 
-/** Same hero photo on all breakpoints — full bleed cover, no mobile swap. */
+/** One hero photo, identical crop on every device via CSS background. */
 export function HeroBackground() {
   return (
     <div
       className="absolute inset-0 z-0 overflow-hidden bg-green-deep pointer-events-none"
       aria-hidden="true"
     >
-      <Image
-        src={sections.hero}
-        alt=""
-        fill
-        priority
-        unoptimized
-        className="hero-bg-photo object-cover"
-        sizes="100vw"
+      <div
+        className="absolute inset-0 hero-bg-layer"
+        style={{ backgroundImage: `url(${sections.hero})` }}
       />
       <div className="absolute inset-0 bg-gradient-to-br from-green-deep/88 via-green-forest/72 to-green-deep/50" />
       <div className="absolute inset-0 bg-gradient-to-t from-green-deep/75 via-transparent to-green-deep/25" />
