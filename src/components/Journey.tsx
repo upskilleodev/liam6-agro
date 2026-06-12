@@ -8,10 +8,8 @@ import { SectionBackground } from "./ui/SectionBackground";
 import { SectionHeader } from "./ui/SectionHeader";
 import { ArrowRight } from "./icons";
 
-const AUTO_PLAY_MS = 2200;
 const STEP_COUNT = JOURNEY_STEPS.length;
 const WHEEL_COOLDOWN_MS = 700;
-const AUTO_PLAY_SNAP_MS = 200;
 const SNAP_DEBOUNCE_MS = 120;
 
 function getScrollPerStepVh() {
@@ -59,22 +57,18 @@ export function Journey() {
   const sectionRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
   const activeStepRef = useRef(0);
-  const isPlayingRef = useRef(false);
   const isSnappingRef = useRef(false);
   const wheelCooldownRef = useRef(false);
   const touchStartYRef = useRef(0);
 
   const [activeStep, setActiveStep] = useState(0);
   const [isInView, setIsInView] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [journeyComplete, setJourneyComplete] = useState(false);
   const [scrollPerStepVh, setScrollPerStepVh] = useState(50);
 
   activeStepRef.current = activeStep;
-  isPlayingRef.current = isPlaying;
 
   const snapToStep = useCallback(
-    (index: number, behavior: ScrollBehavior = "smooth", snapLockMs?: number) => {
+    (index: number, behavior: ScrollBehavior = "smooth") => {
       const section = sectionRef.current;
       if (!section) {
         activeStepRef.current = index;
@@ -91,11 +85,9 @@ export function Journey() {
       activeStepRef.current = index;
       setActiveStep(index);
 
-      const lockMs =
-        snapLockMs ?? (behavior === "smooth" ? WHEEL_COOLDOWN_MS : AUTO_PLAY_SNAP_MS);
       window.setTimeout(() => {
         isSnappingRef.current = false;
-      }, lockMs);
+      }, behavior === "smooth" ? WHEEL_COOLDOWN_MS : 200);
     },
     []
   );
@@ -107,64 +99,22 @@ export function Journey() {
     [snapToStep]
   );
 
-  const completeAutoplay = useCallback(() => {
-    isPlayingRef.current = false;
-    setIsPlaying(false);
-    setJourneyComplete(true);
-  }, []);
-
   const goNext = useCallback(() => {
-    const current = activeStepRef.current;
-
-    if (isPlayingRef.current && current >= STEP_COUNT - 1) {
-      completeAutoplay();
-      return;
-    }
-
-    const next = Math.min(STEP_COUNT - 1, current + 1);
-    if (next !== current) {
-      if (isPlayingRef.current) {
-        snapToStep(next, "auto", AUTO_PLAY_SNAP_MS);
-      } else {
-        setJourneyComplete(false);
-        goTo(next);
-      }
-    }
-  }, [goTo, snapToStep, completeAutoplay]);
+    const next = Math.min(STEP_COUNT - 1, activeStepRef.current + 1);
+    if (next !== activeStepRef.current) goTo(next);
+  }, [goTo]);
 
   const goPrev = useCallback(() => {
-    setJourneyComplete(false);
     const prev = Math.max(0, activeStepRef.current - 1);
     if (prev !== activeStepRef.current) goTo(prev);
   }, [goTo]);
 
   const scrollToStep = useCallback(
     (index: number) => {
-      setIsPlaying(false);
-      setJourneyComplete(false);
       goTo(index);
     },
     [goTo]
   );
-
-  const replayJourney = useCallback(() => {
-    setJourneyComplete(false);
-    setIsPlaying(true);
-    if (activeStepRef.current !== 0) {
-      snapToStep(0, "auto", AUTO_PLAY_SNAP_MS);
-    }
-  }, [snapToStep]);
-
-  const toggleAutoplay = useCallback(() => {
-    if (journeyComplete) {
-      replayJourney();
-      return;
-    }
-    setIsPlaying((playing) => {
-      if (!playing) setJourneyComplete(false);
-      return !playing;
-    });
-  }, [journeyComplete, replayJourney]);
 
   useEffect(() => {
     const onResize = () => setScrollPerStepVh(getScrollPerStepVh());
@@ -195,7 +145,7 @@ export function Journey() {
 
     const syncStepFromScroll = () => {
       rafId = 0;
-      if (isPlayingRef.current || isSnappingRef.current) return;
+      if (isSnappingRef.current) return;
 
       const { scrollable, pinScrollStart } = getScrollMetrics(section, stickyRef.current);
       if (scrollable <= 0) return;
@@ -207,14 +157,13 @@ export function Journey() {
       if (step !== activeStepRef.current) {
         activeStepRef.current = step;
         setActiveStep(step);
-        setJourneyComplete(false);
       }
     };
 
     const scheduleSnap = () => {
       clearTimeout(snapTimer);
       snapTimer = setTimeout(() => {
-        if (isPlayingRef.current || isSnappingRef.current) return;
+        if (isSnappingRef.current) return;
         if (!isInJourneyPinZone(section, stickyRef.current)) return;
 
         const { scrollable, pinScrollStart } = getScrollMetrics(section, stickyRef.current);
@@ -251,7 +200,7 @@ export function Journey() {
     if (!section) return;
 
     const jumpStep = (direction: 1 | -1) => {
-      if (isPlayingRef.current || wheelCooldownRef.current || isSnappingRef.current) return;
+      if (wheelCooldownRef.current || isSnappingRef.current) return;
       if (!isInJourneyPinZone(section, stickyRef.current)) return;
 
       const step = activeStepRef.current;
@@ -301,12 +250,6 @@ export function Journey() {
     };
   }, [snapToStep]);
 
-  useEffect(() => {
-    if (!isInView || !isPlaying) return;
-    const timer = setInterval(goNext, AUTO_PLAY_MS);
-    return () => clearInterval(timer);
-  }, [isInView, isPlaying, goNext]);
-
   return (
     <section
       ref={sectionRef}
@@ -346,8 +289,6 @@ export function Journey() {
             <JourneyScrollStage
               steps={JOURNEY_STEPS}
               activeStep={activeStep}
-              animateContent={isPlaying}
-              isComplete={journeyComplete}
               onStepClick={scrollToStep}
               onPrev={goPrev}
               onNext={goNext}
@@ -355,19 +296,8 @@ export function Journey() {
           </div>
 
           <div
-            className={`shrink-0 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 pb-1 transition-all duration-500 ${isInView ? "opacity-100" : "opacity-0"}`}
+            className={`shrink-0 flex items-center justify-center pb-1 transition-all duration-500 ${isInView ? "opacity-100" : "opacity-0"}`}
           >
-            <button
-              type="button"
-              onClick={toggleAutoplay}
-              className="text-xs font-semibold text-brown-primary/55 hover:text-brown-primary transition-colors"
-            >
-              {journeyComplete
-                ? "Replay journey"
-                : isPlaying
-                  ? "Pause auto-play"
-                  : "Auto-play journey"}
-            </button>
             <a
               href="#products"
               className="inline-flex items-center gap-2 text-sm font-semibold text-green-deep hover:text-green-forest transition-colors"

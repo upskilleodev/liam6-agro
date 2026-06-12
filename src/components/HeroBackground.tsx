@@ -1,10 +1,7 @@
 import Image from "next/image";
 import { sections } from "@/lib/images";
 
-/**
- * One hero photo + same crop/grade on all breakpoints.
- * (The old heroFarm layer made mobile look like a different scene.)
- */
+/** Same hero photo on all breakpoints — full bleed cover, no mobile swap. */
 export function HeroBackground() {
   return (
     <div
@@ -17,13 +14,13 @@ export function HeroBackground() {
         fill
         priority
         unoptimized
-        className="hero-bg-photo object-cover scale-105"
+        className="hero-bg-photo object-cover"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-green-deep/92 via-green-forest/78 to-green-deep/55" />
-      <div className="absolute inset-0 bg-gradient-to-t from-green-deep/80 via-transparent to-green-deep/30" />
+      <div className="absolute inset-0 bg-gradient-to-br from-green-deep/88 via-green-forest/72 to-green-deep/50" />
+      <div className="absolute inset-0 bg-gradient-to-t from-green-deep/75 via-transparent to-green-deep/25" />
       <div
-        className="absolute inset-0 opacity-[0.15]"
+        className="absolute inset-0 opacity-[0.12]"
         style={{
           background:
             "radial-gradient(ellipse 80% 60% at 70% 40%, transparent 0%, var(--green-deep) 100%)",

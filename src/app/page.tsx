@@ -16,7 +16,7 @@ export default function Home() {
       <Header />
       <main className="overflow-x-clip min-w-0 w-full">
         <div className="h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden">
-          <div className="relative flex-1 min-h-0 flex flex-col isolate">
+          <div className="relative flex-1 min-h-0 h-full flex flex-col isolate">
             <HeroBackground />
             <Hero />
           </div>
