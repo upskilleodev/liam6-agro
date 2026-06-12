@@ -33,23 +33,17 @@ export function JourneyScrollStage({
       <div
         className="relative flex-1 min-h-[min(58vh,520px)] sm:min-h-[min(62vh,560px)] rounded-2xl overflow-hidden shadow-[0_20px_50px_-24px_rgba(44,24,16,0.45)] ring-1 ring-brown-primary/10"
       >
-        {steps.map((s, i) => (
-          <div
-            key={s.id}
-            className={`absolute inset-0 transition-opacity duration-300 ${
-              i === activeStep ? "opacity-100 z-[1]" : "opacity-0 z-0 pointer-events-none"
-            }`}
-          >
-            <Image
-              src={s.image}
-              alt={s.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 900px"
-              priority={i === 0}
-            />
-          </div>
-        ))}
+        <div className="absolute inset-0">
+          <Image
+            key={step.image}
+            src={step.image}
+            alt={step.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 900px"
+            priority={activeStep === 0}
+          />
+        </div>
 
         <div className="absolute inset-0 bg-gradient-to-b from-brown-dark/25 via-transparent to-brown-dark/85 z-[2] pointer-events-none" />
 
@@ -71,7 +65,7 @@ export function JourneyScrollStage({
         </span>
 
         <div className="absolute bottom-0 left-0 right-0 z-10 p-4 sm:p-6 lg:p-8">
-          <div key={step.id} className="max-w-2xl animate-journey-step-in">
+          <div key={step.id} className="max-w-2xl">
             <p className="text-gold-light/90 text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase mb-2">
               {step.location}
             </p>

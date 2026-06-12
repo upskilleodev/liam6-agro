@@ -126,15 +126,9 @@ body {
   animation: journey-step-in 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Hero photo — one image, tuned crop per breakpoint */
+/* Hero photo — same crop on mobile and desktop */
 .hero-bg-photo {
   object-position: 50% 52%;
-}
-
-@media (max-width: 639px) {
-  .hero-bg-photo {
-    object-position: 50% 62%;
-  }
 }
 
 .delay-100 { animation-delay: 100ms; }
