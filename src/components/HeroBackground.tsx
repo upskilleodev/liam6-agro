@@ -16,6 +16,7 @@ export function HeroBackground() {
         alt=""
         fill
         priority
+        unoptimized
         className="hero-bg-photo object-cover scale-105"
         sizes="100vw"
       />

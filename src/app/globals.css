@@ -128,7 +128,7 @@ body {
 
 /* Same hero photo focal point on mobile + desktop */
 .hero-bg-photo {
-  object-position: 70% 42%;
+  object-position: 58% 48%;
 }
 
 .delay-100 { animation-delay: 100ms; }
