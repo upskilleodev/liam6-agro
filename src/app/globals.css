@@ -66,10 +66,12 @@ body {
 /* Organic grain overlay utility */
 .grain {
   position: relative;
+  isolation: isolate;
 }
 .grain::after {
   content: "";
   pointer-events: none;
+  z-index: 0;
   position: absolute;
   inset: 0;
   opacity: 0.035;
@@ -126,40 +128,14 @@ body {
   animation: journey-step-in 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Hero — identical background crop on every device (matches desktop) */
-.hero-bg-layer {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: 70% 42%;
+button,
+[role="button"],
+a {
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Journey — desktop scroll scrub; mobile is a single calm panel (no sticky jank) */
-@media (min-width: 640px) {
-  .journey-scroll-section {
-    height: calc(
-      100dvh - 4rem + (var(--journey-steps) - 1) * var(--journey-step-vh) * 1dvh
-    );
-  }
-}
-
-.journey-sticky-panel {
-  position: relative;
-  height: auto;
-}
-
-@media (min-width: 640px) {
-  .journey-sticky-panel {
-    position: sticky;
-    top: 4rem;
-    height: calc(100dvh - 4rem);
-  }
-}
-
-@media (min-width: 1024px) {
-  .journey-sticky-panel {
-    top: 4.5rem;
-    height: calc(100dvh - 4.5rem);
-  }
+.touch-manipulation {
+  touch-action: manipulation;
 }
 
 .delay-100 { animation-delay: 100ms; }

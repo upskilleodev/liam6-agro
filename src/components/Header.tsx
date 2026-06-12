@@ -19,7 +19,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 48);
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -32,12 +32,23 @@ export function Header() {
     };
   }, [menuOpen]);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-[100] isolate transition-shadow duration-300 bg-green-deep border-b border-white/10 ${
         scrolled
-          ? "bg-green-deep/92 backdrop-blur-md shadow-lg shadow-green-deep/20 border-b border-white/8"
-          : "bg-transparent"
+          ? "shadow-lg shadow-green-deep/30"
+          : "shadow-md shadow-green-deep/15"
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -66,7 +77,7 @@ export function Header() {
               <a
                 key={link.href}
                 href={link.href}
-                className="px-4 py-2 text-[13px] text-white/80 hover:text-white hover:bg-white/8 rounded-full transition-all tracking-wide"
+                className="px-4 py-2 text-[13px] text-white/85 hover:text-white hover:bg-white/10 rounded-full transition-all tracking-wide"
               >
                 {link.label}
               </a>
@@ -76,7 +87,7 @@ export function Header() {
           <div className="hidden lg:flex items-center gap-3">
             <a
               href="#products"
-              className="px-5 py-2.5 text-[13px] font-medium text-white border border-white/30 rounded-full hover:border-white/60 hover:bg-white/8 transition-all"
+              className="px-5 py-2.5 text-[13px] font-medium text-white border border-white/35 rounded-full hover:border-white/60 hover:bg-white/10 transition-all"
             >
               View Products
             </a>
@@ -91,9 +102,9 @@ export function Header() {
 
           <button
             type="button"
-            className="lg:hidden relative w-10 h-10 flex items-center justify-center text-white rounded-full hover:bg-white/10 transition-colors"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
+            className="lg:hidden relative z-[101] w-11 h-11 flex items-center justify-center text-white rounded-full bg-white/10 border border-white/20 hover:bg-white/15 active:bg-white/20 transition-colors touch-manipulation"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -108,38 +119,47 @@ export function Header() {
       </div>
 
       {menuOpen && (
-        <div className="lg:hidden fixed inset-0 top-16 bg-green-deep/98 backdrop-blur-lg overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]">
-          <nav className="flex flex-col px-5 sm:px-6 py-6 sm:py-8 gap-1 min-h-0">
-            {navLinks.map((link, i) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="py-3.5 text-base sm:text-lg font-serif text-white/90 hover:text-gold border-b border-white/8 transition-colors animate-fade-up"
-                style={{ animationDelay: `${i * 60}ms` }}
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </a>
-            ))}
-            <div className="flex flex-col gap-3 pt-8 mt-4">
-              <a
-                href="#products"
-                className="text-center py-3.5 font-medium text-white border border-white/30 rounded-full"
-                onClick={() => setMenuOpen(false)}
-              >
-                View Products
-              </a>
-              <WhatsAppLink
-                message={whatsappMessages.quote}
-                ariaLabel="Request a quote on WhatsApp"
-                className="text-center py-3.5 font-semibold text-white bg-orange-accent rounded-full shadow-lg"
-                onClick={() => setMenuOpen(false)}
-              >
-                Request Quote
-              </WhatsAppLink>
-            </div>
-          </nav>
-        </div>
+        <>
+          <button
+            type="button"
+            className="lg:hidden fixed inset-0 top-16 z-[90] bg-black/40"
+            aria-label="Close menu"
+            onClick={closeMenu}
+          />
+          <div
+            className="lg:hidden fixed inset-x-0 top-16 bottom-0 z-[95] bg-green-deep border-t border-white/10 overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]"
+          >
+            <nav className="flex flex-col px-5 sm:px-6 py-6 sm:py-8 gap-1 min-h-0">
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="py-3.5 text-base sm:text-lg font-serif text-white/90 hover:text-gold border-b border-white/8 transition-colors touch-manipulation"
+                  onClick={closeMenu}
+                >
+                  {link.label}
+                </a>
+              ))}
+              <div className="flex flex-col gap-3 pt-8 mt-4">
+                <a
+                  href="#products"
+                  className="text-center py-3.5 font-medium text-white border border-white/30 rounded-full touch-manipulation"
+                  onClick={closeMenu}
+                >
+                  View Products
+                </a>
+                <WhatsAppLink
+                  message={whatsappMessages.quote}
+                  ariaLabel="Request a quote on WhatsApp"
+                  className="text-center py-3.5 font-semibold text-white bg-orange-accent rounded-full shadow-lg touch-manipulation"
+                  onClick={closeMenu}
+                >
+                  Request Quote
+                </WhatsAppLink>
+              </div>
+            </nav>
+          </div>
+        </>
       )}
     </header>
   );

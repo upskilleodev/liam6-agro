@@ -12,7 +12,8 @@
     "generate-icons": "node scripts/generate-icons.mjs",
     "generate-logo": "node scripts/generate-logo.mjs",
     "generate-journey": "node scripts/generate-journey-images.mjs",
-    "generate-farming-bg": "node scripts/generate-farming-backgrounds.mjs"
+    "generate-farming-bg": "node scripts/generate-farming-backgrounds.mjs",
+    "compress-images": "node scripts/compress-images.mjs"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -27,6 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "sharp": "^0.35.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

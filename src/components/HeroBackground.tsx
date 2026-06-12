@@ -1,15 +1,20 @@
+import Image from "next/image";
 import { sections } from "@/lib/images";
 
-/** One hero photo, identical crop on every device via CSS background. */
+/** Hero photo — Next/Image for mobile-friendly optimization + consistent crop. */
 export function HeroBackground() {
   return (
     <div
       className="absolute inset-0 z-0 overflow-hidden bg-green-deep pointer-events-none"
       aria-hidden="true"
     >
-      <div
-        className="absolute inset-0 hero-bg-layer"
-        style={{ backgroundImage: `url(${sections.hero})` }}
+      <Image
+        src={sections.hero}
+        alt=""
+        fill
+        priority
+        className="object-cover object-[70%_42%]"
+        sizes="100vw"
       />
       <div className="absolute inset-0 bg-gradient-to-br from-green-deep/88 via-green-forest/72 to-green-deep/50" />
       <div className="absolute inset-0 bg-gradient-to-t from-green-deep/75 via-transparent to-green-deep/25" />

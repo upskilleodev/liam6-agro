@@ -275,7 +275,7 @@ export function GlobalExportMap() {
           <button
             type="button"
             onClick={() => setRegionFilter("all")}
-            className={`px-3.5 sm:px-4 py-2 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 ${
+            className={`px-3.5 sm:px-4 py-2.5 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation cursor-pointer ${
               regionFilter === "all"
                 ? "bg-orange-accent text-white border-orange-accent"
                 : "bg-white/8 text-white/70 border-white/15 hover:border-gold/40"
@@ -288,7 +288,7 @@ export function GlobalExportMap() {
               key={region}
               type="button"
               onClick={() => setRegionFilter(region)}
-              className={`px-3.5 sm:px-4 py-2 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 ${
+              className={`px-3.5 sm:px-4 py-2.5 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation cursor-pointer ${
                 regionFilter === region
                   ? "bg-white/15 text-white border-gold/50"
                   : "bg-white/8 text-white/70 border-white/15 hover:border-gold/40"

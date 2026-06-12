@@ -30,10 +30,9 @@ export function Hero() {
             <br />
             <span className="text-gold-light">to Global Tables.</span>
           </h1>
-          <p className="text-white/80 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 max-w-xl">
-            Cinematic agricultural craftsmanship meets international trade. We export
-            premium organic ginger, ginger coffee, and rare spices from the lands of
-            Karnataka to the world&apos;s finest markets.
+          <p className="text-white/80 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 max-w-xl line-clamp-4 sm:line-clamp-none">
+            Premium organic ginger, ginger coffee, and spices from Karnataka — export-grade
+            quality to 28+ countries worldwide.
           </p>
           <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-4">
             <WhatsAppLink

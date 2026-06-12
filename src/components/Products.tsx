@@ -63,7 +63,7 @@ export function Products() {
       />
       <ProductsPlantationDecor />
 
-      <div className="relative z-[1] mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
           <SectionHeader
             eyebrow="Curated Collection"
@@ -81,11 +81,11 @@ export function Products() {
         </div>
 
         {/* Category filters — horizontal scroll on mobile */}
-        <div className="flex gap-2 mb-8 sm:mb-12 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1 sm:flex-wrap sm:overflow-visible">
+        <div className="relative z-10 flex gap-2 mb-8 sm:mb-12 overflow-x-auto pb-2 scrollbar-none -mx-1 px-1 sm:flex-wrap sm:overflow-visible">
           <button
             type="button"
             onClick={() => setActiveCategory("all")}
-            className={`px-3.5 sm:px-4 py-2 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 ${
+            className={`px-3.5 sm:px-4 py-2.5 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation cursor-pointer ${
               activeCategory === "all"
                 ? "bg-green-deep text-white border-green-deep shadow-md"
                 : "bg-white/80 text-brown-primary/70 border-brown-primary/15 hover:border-orange-accent/40"
@@ -100,7 +100,7 @@ export function Products() {
                 key={cat}
                 type="button"
                 onClick={() => setActiveCategory(cat)}
-                className={`px-3.5 sm:px-4 py-2 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 ${
+                className={`px-3.5 sm:px-4 py-2.5 text-[10px] sm:text-xs font-semibold tracking-wide uppercase rounded-full border transition-all shrink-0 touch-manipulation cursor-pointer ${
                   activeCategory === cat
                     ? "bg-orange-accent text-white border-orange-accent shadow-md"
                     : "bg-white/80 text-brown-primary/70 border-brown-primary/15 hover:border-orange-accent/40"
