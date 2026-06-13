@@ -9,7 +9,7 @@ import { ArrowRight } from "./icons";
 
 export function Journey() {
   return (
-    <section id="journey" className="relative overflow-hidden pattern-leaves py-12 sm:py-20 lg:py-24">
+    <section id="journey" className="relative overflow-x-clip pattern-leaves py-12 sm:py-20 lg:py-24">
       <SectionBackground
         src={backgrounds.journey}
         patternSrc={backgrounds.journeyPattern}
@@ -26,7 +26,7 @@ export function Journey() {
           description="Seven steps we run ourselves — from our Karnataka farms through our facilities to ports worldwide. No traders, no brokers."
         />
 
-        <div className="relative left-1/2 -translate-x-1/2 w-screen sm:left-0 sm:translate-x-0 sm:w-full">
+        <div className="-mx-4 sm:mx-0">
           <JourneyCarousel steps={JOURNEY_STEPS} />
         </div>
 

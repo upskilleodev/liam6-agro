@@ -7,6 +7,8 @@ import { ChevronLeft, ChevronRight } from "../icons";
 
 const AUTOPLAY_MS = 1500;
 const SWIPE_TRANSITION = "transform 320ms cubic-bezier(0.22, 1, 0.36, 1)";
+const DIRECTION_LOCK_PX = 10;
+const SCROLL_COOLDOWN_MS = 800;
 
 type JourneyCarouselProps = {
   steps: JourneyStep[];
@@ -39,13 +41,7 @@ const JourneySlide = memo(function JourneySlide({
   const near = isAdjacent(index, activeStep, total);
 
   return (
-    <article
-      className="relative flex-shrink-0 w-full h-full min-h-[inherit]"
-      style={{
-        contentVisibility: near ? "visible" : "hidden",
-        containIntrinsicSize: near ? undefined : "0 480px",
-      }}
-    >
+    <article className="relative flex-shrink-0 w-full h-full min-h-[inherit]">
       {near ? (
         <Image
           src={step.image}
@@ -70,7 +66,7 @@ const JourneySlide = memo(function JourneySlide({
         {step.step}
       </span>
 
-      <div className="absolute bottom-0 left-0 right-0 z-10 p-4 sm:p-6 lg:p-8">
+      <div className="absolute bottom-0 left-0 right-0 z-10 p-4 sm:p-6 lg:p-8 pointer-events-auto">
         <div className="max-w-2xl">
           <p className="text-gold-light/90 text-[10px] sm:text-xs font-semibold tracking-[0.18em] uppercase mb-2">
             {step.location}
@@ -112,7 +108,8 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const activeStepRef = useRef(activeStep);
   const draggingRef = useRef(false);
-  const pointerRef = useRef({ id: -1, x: 0, y: 0, locked: false });
+  const scrollingRef = useRef(false);
+  const pointerRef = useRef({ id: -1, x: 0, y: 0, locked: false, tracking: false });
   const prevStepRef = useRef(0);
 
   activeStepRef.current = activeStep;
@@ -126,6 +123,11 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
     track.style.transition = animate ? SWIPE_TRANSITION : "none";
     track.style.transform = `translate3d(calc(-${activeStepRef.current * 100}% + ${offsetPx}px), 0, 0)`;
   }, []);
+
+  const resetPointer = () => {
+    draggingRef.current = false;
+    pointerRef.current = { id: -1, x: 0, y: 0, locked: false, tracking: false };
+  };
 
   const goTo = useCallback(
     (index: number, fromUser = false) => {
@@ -190,10 +192,27 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
   }, []);
 
   useEffect(() => {
+    let scrollEndTimer: number;
+    const onScroll = () => {
+      scrollingRef.current = true;
+      window.clearTimeout(scrollEndTimer);
+      scrollEndTimer = window.setTimeout(() => {
+        scrollingRef.current = false;
+      }, SCROLL_COOLDOWN_MS);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(scrollEndTimer);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!autoplay || !isVisible) return;
 
     const timer = window.setInterval(() => {
-      if (draggingRef.current) return;
+      if (draggingRef.current || scrollingRef.current) return;
       setExpandedStep(null);
       setActiveStep((prev) => (prev + 1) % steps.length);
     }, AUTOPLAY_MS);
@@ -207,28 +226,39 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
     }
   };
 
+  const isMousePointer = (e: React.PointerEvent) => e.pointerType === "mouse";
+
   const onPointerDown = (e: React.PointerEvent) => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
+    // Touch uses touch handlers — pointer capture on touch blocks vertical page scroll (iOS).
+    if (!isMousePointer(e) || e.button !== 0) return;
     if ((e.target as HTMLElement).closest("button")) return;
 
-    draggingRef.current = true;
-    pointerRef.current = { id: e.pointerId, x: e.clientX, y: e.clientY, locked: false };
-    applyTransform(0, false);
+    pointerRef.current = {
+      id: e.pointerId,
+      x: e.clientX,
+      y: e.clientY,
+      locked: false,
+      tracking: true,
+    };
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!draggingRef.current || pointerRef.current.id !== e.pointerId) return;
+    if (!isMousePointer(e)) return;
+    if (!pointerRef.current.tracking || pointerRef.current.id !== e.pointerId) return;
 
     const dx = e.clientX - pointerRef.current.x;
     const dy = e.clientY - pointerRef.current.y;
 
     if (!pointerRef.current.locked) {
-      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-      if (Math.abs(dx) <= Math.abs(dy)) {
-        draggingRef.current = false;
+      if (Math.abs(dx) < DIRECTION_LOCK_PX && Math.abs(dy) < DIRECTION_LOCK_PX) return;
+
+      if (Math.abs(dy) >= Math.abs(dx)) {
+        pointerRef.current.tracking = false;
         return;
       }
+
       pointerRef.current.locked = true;
+      draggingRef.current = true;
       e.currentTarget.setPointerCapture(e.pointerId);
     }
 
@@ -241,7 +271,9 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
   };
 
   const finishDrag = (e: React.PointerEvent, fromUser = true) => {
-    if (!draggingRef.current || pointerRef.current.id !== e.pointerId) return;
+    if (!isMousePointer(e)) return;
+    if (!pointerRef.current.tracking && !draggingRef.current) return;
+    if (pointerRef.current.id !== -1 && pointerRef.current.id !== e.pointerId) return;
 
     const dx = e.clientX - pointerRef.current.x;
     const width = containerRef.current?.offsetWidth ?? 320;
@@ -257,14 +289,12 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
       } else {
         setActiveStep((prev) => (prev - 1 + steps.length) % steps.length);
       }
-    } else {
+    } else if (draggingRef.current) {
       applyTransform(0, true);
     }
 
-    draggingRef.current = false;
-    pointerRef.current.locked = false;
-    pointerRef.current.id = -1;
     releasePointer(e.currentTarget, e.pointerId);
+    resetPointer();
   };
 
   const onPointerUp = (e: React.PointerEvent) => finishDrag(e, true);
@@ -272,26 +302,32 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
 
   return (
     <div className="flex flex-col gap-2 sm:gap-3">
+      {/* pointer-events-none on the slide shell lets vertical page scroll pass through the image area on iOS */}
       <div
         ref={containerRef}
-        className="relative w-full h-[min(70vh,640px)] sm:h-auto sm:aspect-[16/10] sm:max-h-[min(62vh,560px)] rounded-none sm:rounded-2xl overflow-hidden shadow-[0_20px_50px_-24px_rgba(44,24,16,0.45)] select-none touch-pan-y"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerCancel}
+        className="relative w-full h-[min(58vh,520px)] sm:h-auto sm:aspect-[16/10] sm:max-h-[min(62vh,560px)] pointer-events-none select-none"
+        style={{ touchAction: "pan-y pinch-zoom" }}
       >
-        <div ref={trackRef} className="flex h-full w-full">
-          {steps.map((s, i) => (
-            <JourneySlide
-              key={s.id}
-              step={s}
-              index={i}
-              activeStep={activeStep}
-              total={steps.length}
-              expanded={expandedStep === i}
-              onToggleExpand={toggleExpand}
-            />
-          ))}
+        <div
+          className="absolute inset-0 overflow-hidden rounded-none sm:rounded-2xl shadow-[0_20px_50px_-24px_rgba(44,24,16,0.45)] pointer-events-none sm:pointer-events-auto"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerCancel}
+        >
+          <div ref={trackRef} className="flex h-full w-full">
+            {steps.map((s, i) => (
+              <JourneySlide
+                key={s.id}
+                step={s}
+                index={i}
+                activeStep={activeStep}
+                total={steps.length}
+                expanded={expandedStep === i}
+                onToggleExpand={toggleExpand}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
@@ -337,7 +373,9 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
       </div>
 
       <p className="text-center text-[11px] text-brown-primary/45 font-medium tracking-wide px-4 sm:px-0">
-        {autoplay ? "Auto-playing — swipe or tap arrows to take control" : "Swipe or use arrows to explore each step"}
+        {autoplay
+          ? "Auto-playing — use arrows below to explore each step"
+          : "Use arrows to explore each step"}
       </p>
     </div>
   );
