@@ -6,7 +6,7 @@ import { WhatsAppLink } from "./WhatsAppLink";
 export function StickyWhatsApp() {
   return (
     <div
-      className="fixed z-[90] bottom-[max(5.5rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] lg:hidden"
+      className="fixed z-[90] bottom-[max(2.25rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] lg:hidden"
     >
       <WhatsAppLink
         message={whatsappMessages.contact}
