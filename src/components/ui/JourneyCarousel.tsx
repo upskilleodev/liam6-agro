@@ -105,14 +105,18 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
   const [isVisible, setIsVisible] = useState(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const clipRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const activeStepRef = useRef(activeStep);
   const draggingRef = useRef(false);
   const scrollingRef = useRef(false);
   const pointerRef = useRef({ id: -1, x: 0, y: 0, locked: false, tracking: false });
+  const touchRef = useRef({ x: 0, y: 0, locked: false, vertical: false });
   const prevStepRef = useRef(0);
+  const stepsLengthRef = useRef(steps.length);
 
   activeStepRef.current = activeStep;
+  stepsLengthRef.current = steps.length;
 
   const stopAutoplay = useCallback(() => setAutoplay(false), []);
 
@@ -220,6 +224,91 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
     return () => window.clearInterval(timer);
   }, [autoplay, isVisible, steps.length]);
 
+  useEffect(() => {
+    const el = clipRef.current;
+    if (!el) return;
+
+    const resetTouch = () => {
+      touchRef.current = { x: 0, y: 0, locked: false, vertical: false };
+      draggingRef.current = false;
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest("button")) return;
+      touchRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        locked: false,
+        vertical: false,
+      };
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = touchRef.current;
+      const dx = e.touches[0].clientX - touch.x;
+      const dy = e.touches[0].clientY - touch.y;
+
+      if (!touch.locked && !touch.vertical) {
+        if (Math.abs(dx) < DIRECTION_LOCK_PX && Math.abs(dy) < DIRECTION_LOCK_PX) return;
+        if (Math.abs(dy) >= Math.abs(dx)) {
+          touch.vertical = true;
+          return;
+        }
+        touch.locked = true;
+        draggingRef.current = true;
+      }
+
+      if (touch.vertical) return;
+
+      let offset = dx;
+      const step = activeStepRef.current;
+      const total = stepsLengthRef.current;
+      if (step === 0 && offset > 0) offset *= 0.35;
+      if (step === total - 1 && offset < 0) offset *= 0.35;
+
+      applyTransform(offset, false);
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const touch = touchRef.current;
+      if (touch.vertical) {
+        resetTouch();
+        return;
+      }
+
+      const dx = e.changedTouches[0].clientX - touch.x;
+      const width = containerRef.current?.offsetWidth ?? 320;
+      const threshold = Math.min(48, width * 0.15);
+
+      if (touch.locked && Math.abs(dx) >= threshold) {
+        stopAutoplay();
+        setExpandedStep(null);
+        const total = stepsLengthRef.current;
+        if (dx < 0) {
+          setActiveStep((prev) => (prev + 1) % total);
+        } else {
+          setActiveStep((prev) => (prev - 1 + total) % total);
+        }
+      } else if (touch.locked) {
+        applyTransform(0, true);
+      }
+
+      resetTouch();
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: true });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [applyTransform, stopAutoplay]);
+
   const releasePointer = (target: Element, pointerId: number) => {
     if (target instanceof HTMLElement && target.hasPointerCapture(pointerId)) {
       target.releasePointerCapture(pointerId);
@@ -302,14 +391,13 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
 
   return (
     <div className="flex flex-col gap-2 sm:gap-3">
-      {/* pointer-events-none on the slide shell lets vertical page scroll pass through the image area on iOS */}
       <div
         ref={containerRef}
-        className="relative w-full h-[min(58vh,520px)] sm:h-auto sm:aspect-[16/10] sm:max-h-[min(62vh,560px)] pointer-events-none select-none"
-        style={{ touchAction: "pan-y pinch-zoom" }}
+        className="relative w-full h-[min(58vh,520px)] sm:h-auto sm:aspect-[16/10] sm:max-h-[min(62vh,560px)] select-none"
       >
         <div
-          className="absolute inset-0 overflow-hidden rounded-none sm:rounded-2xl shadow-[0_20px_50px_-24px_rgba(44,24,16,0.45)] pointer-events-none sm:pointer-events-auto"
+          ref={clipRef}
+          className="absolute inset-0 overflow-hidden rounded-none sm:rounded-2xl shadow-[0_20px_50px_-24px_rgba(44,24,16,0.45)] touch-pan-y"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -374,8 +462,8 @@ export function JourneyCarousel({ steps }: JourneyCarouselProps) {
 
       <p className="text-center text-[11px] text-brown-primary/45 font-medium tracking-wide px-4 sm:px-0">
         {autoplay
-          ? "Auto-playing — use arrows below to explore each step"
-          : "Use arrows to explore each step"}
+          ? "Auto-playing — swipe or tap arrows to explore each step"
+          : "Swipe or use arrows to explore each step"}
       </p>
     </div>
   );
