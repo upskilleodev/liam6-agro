@@ -1,18 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { JOURNEY_STEPS } from "@/data/journey";
 import { backgrounds } from "@/lib/images";
-import { JourneyScrollStage } from "./ui/JourneyScrollStage";
+import { JourneyCarousel } from "./ui/JourneyCarousel";
 import { SectionBackground } from "./ui/SectionBackground";
 import { SectionHeader } from "./ui/SectionHeader";
 import { ArrowRight } from "./icons";
 
 export function Journey() {
-  const [activeStep, setActiveStep] = useState(0);
-
   return (
-    <section id="journey" className="relative overflow-hidden pattern-leaves py-16 sm:py-20 lg:py-24">
+    <section id="journey" className="relative overflow-hidden pattern-leaves py-12 sm:py-20 lg:py-24">
       <SectionBackground
         src={backgrounds.journey}
         patternSrc={backgrounds.journeyPattern}
@@ -21,19 +18,17 @@ export function Journey() {
         imageClassName="object-cover object-center opacity-60"
       />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 flex flex-col gap-6 sm:gap-8">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 flex flex-col gap-4 sm:gap-8">
         <SectionHeader
           align="center"
-          eyebrow="Farm to World Export"
+          eyebrow="Farm to World · No Middlemen"
           title="The Journey of Our Ginger"
-          description="Seven chapters from Karnataka farms to global tables."
+          description="Seven steps we run ourselves — from our Karnataka farms through our facilities to ports worldwide. No traders, no brokers."
         />
 
-        <JourneyScrollStage
-          steps={JOURNEY_STEPS}
-          activeStep={activeStep}
-          onStepChange={setActiveStep}
-        />
+        <div className="relative left-1/2 -translate-x-1/2 w-screen sm:left-0 sm:translate-x-0 sm:w-full">
+          <JourneyCarousel steps={JOURNEY_STEPS} />
+        </div>
 
         <div className="flex items-center justify-center">
           <a

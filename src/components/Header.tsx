@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { whatsappMessages } from "@/lib/whatsapp";
-import { LogoMark } from "./icons";
+import { LogoWordmark } from "./LogoWordmark";
 import { WhatsAppLink } from "./WhatsAppLink";
 
 const navLinks = [
@@ -53,19 +53,8 @@ export function Header() {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-[4.5rem]">
-          <a
-            href="#home"
-            className="flex items-center gap-2.5 sm:gap-3 min-w-0 shrink-0 group"
-          >
-            <LogoMark className="w-10 h-10 sm:w-11 sm:h-11 text-gold/85 shrink-0" />
-            <div className="flex flex-col justify-center min-w-0">
-              <span className="font-serif text-xl sm:text-2xl font-semibold text-white tracking-tight leading-none">
-                Liam6Agro
-              </span>
-              <span className="mt-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-gold/90 leading-none">
-                Exports
-              </span>
-            </div>
+          <a href="#home" className="min-w-0 shrink-0 group">
+            <LogoWordmark />
           </a>
 
           <nav className="hidden lg:flex items-center gap-1">

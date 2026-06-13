@@ -45,27 +45,30 @@ export function OurStory() {
           <div className="order-1 lg:order-2">
             <SectionHeader
               eyebrow="Our Story"
-              title="Rooted in the Soil. Trusted by the World."
+              title="We Grow It. We Process It. We Export It."
+              description="One integrated operation — no traders, no brokers, no layers between our farms and your port."
             />
 
-            <div className="mt-8 space-y-5 text-brown-primary/70 leading-relaxed">
+            <div className="mt-6 sm:mt-8 space-y-5 text-brown-primary/70 leading-relaxed">
               <p>
-                Founded in 2013, Liam6Agro Exports was born from a simple belief: the fertile lands
-                of Karnataka produce ginger of unparalleled quality, and the world deserves access
-                to it. What began as a small export venture has grown into a trusted name serving
-                importers, food processors, and retailers across 28+ countries.
+                Founded in 2013, Liam6Agro Exports was built on a simple promise: own the full
+                journey. We cultivate ginger on Karnataka farms, run our own washing, grading,
+                and packing facilities, and sell and ship directly to buyers across the world —
+                never through middlemen or auction yards.
               </p>
               <p>
-                Under the leadership of Mohammed Irfan, we have built direct relationships with
-                farming communities across Malnad, Coorg, and Hassan — ensuring fair practices,
-                sustainable cultivation, and consistent export-grade quality.
+                Under Mohammed Irfan&apos;s leadership, every batch is grown, processed, and
+                exported under one roof. That means fair value for farmers, certified quality you
+                can verify, and a direct relationship with the team that actually moves your
+                ginger from field to freight.
               </p>
             </div>
 
             <blockquote className="mt-6 sm:mt-8 pl-4 sm:pl-5 border-l-2 border-orange-accent">
               <p className="font-serif text-lg sm:text-xl text-brown-primary italic leading-relaxed">
-                &ldquo;Every shipment carries the essence of Karnataka&apos;s soil — aromatic,
-                authentic, and uncompromising in quality.&rdquo;
+                &ldquo;We don&apos;t buy from traders. We produce on our farms, process in our
+                units, and export with our own team — that is how Karnataka ginger reaches the
+                world.&rdquo;
               </p>
             </blockquote>
 
@@ -79,7 +82,7 @@ export function OurStory() {
                   Founder &amp; CEO
                 </p>
                 <p className="text-sm text-brown-primary/50 mt-0.5">
-                  Leading Karnataka&apos;s ginger to global markets since 2013
+                  Farm-to-export — grow, process, and ship direct since 2013
                 </p>
               </div>
             </div>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { sections } from "@/lib/images";
 
-/** Hero photo — Next/Image for mobile-friendly optimization + consistent crop. */
+/** Responsive hero photography — separate crops for mobile portrait vs desktop landscape. */
 export function HeroBackground() {
   return (
     <div
@@ -9,23 +9,39 @@ export function HeroBackground() {
       aria-hidden="true"
     >
       <Image
-        src={sections.hero}
+        src={sections.heroMobile}
         alt=""
         fill
         priority
-        className="object-cover object-[70%_42%]"
+        className="object-cover object-center sm:hidden"
         sizes="100vw"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-green-deep/88 via-green-forest/72 to-green-deep/50" />
-      <div className="absolute inset-0 bg-gradient-to-t from-green-deep/75 via-transparent to-green-deep/25" />
+      <Image
+        src={sections.heroDesktop}
+        alt=""
+        fill
+        priority
+        className="object-cover object-[72%_38%] hidden sm:block"
+        sizes="100vw"
+      />
+
+      {/* Left vignette — headline legibility */}
       <div
-        className="absolute inset-0 opacity-[0.12]"
+        className="absolute inset-0 bg-gradient-to-r from-green-deep/92 via-green-deep/55 to-transparent sm:from-green-deep/88 sm:via-green-deep/45 sm:to-transparent"
+      />
+      {/* Top — navbar contrast */}
+      <div className="absolute inset-0 bg-gradient-to-b from-green-deep/50 via-transparent to-transparent" />
+      {/* Bottom — certifications bar blend */}
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-brown-primary/40 to-transparent" />
+
+      {/* Subtle gold warmth */}
+      <div
+        className="absolute inset-0 opacity-[0.14] mix-blend-soft-light"
         style={{
           background:
-            "radial-gradient(ellipse 80% 60% at 70% 40%, transparent 0%, var(--green-deep) 100%)",
+            "radial-gradient(ellipse 70% 55% at 75% 45%, rgba(201, 169, 98, 0.35) 0%, transparent 70%)",
         }}
       />
-      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-b from-transparent to-brown-primary/35" />
     </div>
   );
 }

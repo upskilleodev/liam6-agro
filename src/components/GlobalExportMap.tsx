@@ -316,7 +316,7 @@ export function GlobalExportMap() {
           eyebrow="Global Ginger Export"
           title="Our Reach Across the World"
           titleId="global-reach-heading"
-          description="From Karnataka's fertile farms, we export premium ginger to 28+ countries — traceable supply routes spanning the Americas, Europe, Middle East, and Asia-Pacific."
+          description="We export directly from our Karnataka operations — no intermediaries between our farms, our facilities, and your port."
           align="center"
           light
         />

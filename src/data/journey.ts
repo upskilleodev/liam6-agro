@@ -17,12 +17,12 @@ export const JOURNEY_STEPS: JourneyStep[] = [
   {
     id: "farm",
     step: "01",
-    title: "Karnataka Farms",
+    title: "Our Karnataka Farms",
     location: "Malnad & Coorg Highlands",
     description:
-      "Ginger is cultivated in fertile red laterite soils of Karnataka — where monsoon rains and tropical climate produce the world's most aromatic rhizomes.",
+      "We grow ginger on our own farms and long-term partner plots across Malnad, Coorg, and Hassan — never bought through traders or auction markets.",
     detail:
-      "Our partner farms across Hassan, Coorg, and Chikmagalur follow sustainable practices with direct traceability from plot to export batch.",
+      "Every export lot is traceable to the field. We control cultivation from seed to harvest, so quality and pricing stay in our hands — not a middleman's.",
     icon: "map",
     image: sections.journeyFarm,
   },
@@ -32,9 +32,9 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     title: "Hand Harvest",
     location: "Peak Maturity Selection",
     description:
-      "Skilled farmers hand-select ginger at optimal maturity — maximizing essential oil content and uniform export-grade sizing.",
+      "Our farm teams hand-select ginger at peak maturity for maximum essential oil, uniform sizing, and export-grade aroma.",
     detail:
-      "Each rhizome is inspected for aroma, fiber structure, and moisture before leaving the field.",
+      "Each rhizome is inspected for fibre, moisture, and aroma on-site before it leaves our fields — no third-party grading at this stage.",
     icon: "plant",
     image: sections.journeyHarvest,
   },
@@ -42,11 +42,11 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     id: "washing",
     step: "03",
     title: "Washing & Cleaning",
-    location: "Primary Processing",
+    location: "Our Processing Unit",
     description:
-      "Fresh ginger is washed in hygienic tanks to remove soil while preserving the natural skin and essential oils.",
+      "Fresh ginger is washed in our own hygienic facility — soil removed while preserving natural skin and essential oils.",
     detail:
-      "Temperature-controlled water and gentle handling prevent bruising before grading begins.",
+      "Temperature-controlled water and trained staff handle every batch in-house before grading begins.",
     icon: "shield",
     image: sections.journeyWashing,
   },
@@ -54,11 +54,11 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     id: "grading",
     step: "04",
     title: "Grading & Sorting",
-    location: "Export-Grade Facility",
+    location: "Our Export Facility",
     description:
-      "Roots are sorted by size, weight, and quality grade to meet specifications for each international market.",
+      "In our facility, roots are sorted by size, weight, and grade to match each international buyer's specifications.",
     detail:
-      "Rejected batches never mix with export lots — full batch integrity for importers and processors.",
+      "Rejected lots never mix with export batches. We own the process — importers deal directly with the team that graded their ginger.",
     icon: "shield",
     image: sections.journeyGrading,
   },
@@ -68,9 +68,9 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     title: "Export Packaging",
     location: "Cold-Chain Ready",
     description:
-      "Ginger is packed in ventilated crates and cold-storage units — prepared for long-distance international freight.",
+      "We pack in ventilated crates and cold-storage units at our warehouse — prepared for long-distance international freight.",
     detail:
-      "APEDA-registered documentation and phytosanitary certificates prepared for each destination country.",
+      "APEDA-registered documentation and phytosanitary certificates are prepared by our export team for each destination.",
     icon: "truck",
     image: sections.journeyExport,
   },
@@ -80,21 +80,21 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     title: "Port & Logistics",
     location: "Mangalore & Chennai",
     description:
-      "Temperature-controlled logistics from our facility to major ports — preserving freshness until arrival.",
+      "Our logistics team moves cargo from our facility to major ports — temperature-controlled, direct to vessel, no forwarding agents in the chain.",
     detail:
-      "We coordinate freight, insurance, and port handling for seamless importer experience.",
+      "We coordinate freight, insurance, and port handling end-to-end so importers get one direct contact from farm to ship.",
     icon: "truck",
     image: sections.journeyShipping,
   },
   {
     id: "global",
     step: "07",
-    title: "Global Markets",
+    title: "Sold & Shipped Worldwide",
     location: "28+ Countries",
     description:
-      "From the USA and Europe to the Middle East and Asia-Pacific — Karnataka ginger reaches the world's finest tables.",
+      "We sell and export directly to importers across the Americas, Europe, Middle East, and Asia-Pacific — farm to world, under our own name.",
     detail:
-      "Trusted by importers, food processors, retailers, and wellness brands worldwide since 2013.",
+      "Trusted by food processors, retailers, and wellness brands since 2013 — because they buy from the producer, not through layers of traders.",
     icon: "globe",
     image: sections.journeyGlobal,
   },

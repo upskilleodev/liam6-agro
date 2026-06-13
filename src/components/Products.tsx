@@ -129,9 +129,9 @@ export function Products() {
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
           <SectionHeader
-            eyebrow="Curated Collection"
-            title="Ginger Products We Export"
-            description="After our farm-to-export journey, these are the premium ginger products we deliver worldwide — from fresh rhizomes to oils, pastes, and beverages."
+            eyebrow="Our Own Production"
+            title="Ginger Products We Grow & Export"
+            description="Every product is produced and processed by us — grown on our farms, finished in our facilities, and exported direct to buyers worldwide."
           />
           <WhatsAppLink
             message={whatsappMessages.catalog}

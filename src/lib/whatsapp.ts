@@ -9,10 +9,10 @@ export function whatsappUrl(message: string): string {
 export const whatsappMessages = {
   quote: `Hello Liam6Agro Exports,
 
-I would like to request a quote for your premium ginger export products from Karnataka.
+I would like a direct export quote — we prefer buying from producers without middlemen.
 
-Please share details on:
-• Product availability
+Please share:
+• Product availability from your farms
 • Export pricing & MOQ
 • Shipping to my country
 
@@ -20,9 +20,9 @@ Thank you!`,
 
   contact: `Hello Liam6Agro Exports,
 
-I would like to connect with your export team regarding ginger supply from Karnataka to our market.
+I am interested in buying ginger direct from your farms — no middlemen.
 
-Please let me know the next steps.
+Please let me know how we can import from your export team.
 
 Thank you!`,
 

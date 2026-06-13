@@ -20,8 +20,7 @@ export type GingerProduct = {
 };
 
 /**
- * Ginger-derived products commonly traded in international agro export markets.
- * Sourced from Karnataka farms — aligned with global food, beverage, pharma & wellness demand.
+ * Ginger products grown on our farms, processed in our facilities, exported direct.
  */
 export const GINGER_PRODUCTS: GingerProduct[] = [
   {

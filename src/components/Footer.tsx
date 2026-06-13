@@ -1,5 +1,5 @@
 import { whatsappMessages } from "@/lib/whatsapp";
-import { Logo } from "./Logo";
+import { LogoWordmark } from "./LogoWordmark";
 import { WhatsAppLink } from "./WhatsAppLink";
 
 type FooterLink =
@@ -32,20 +32,10 @@ export function Footer() {
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-14 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-8">
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <Logo variant="gold" onDark className="w-10 h-10 shrink-0" />
-              <div className="flex flex-col gap-1 sm:gap-0.5">
-                <span className="font-serif text-xl font-semibold text-white tracking-tight leading-none block">
-                  Liam6Agro
-                </span>
-                <span className="text-[9px] sm:text-[10px] tracking-[0.22em] uppercase text-gold block leading-none pl-[3px]">
-                  Exports
-                </span>
-              </div>
-            </div>
+            <LogoWordmark className="mb-4" />
             <p className="text-white/50 text-sm leading-relaxed max-w-sm mb-6">
-              Premium ginger and agro exports from Karnataka&apos;s fertile lands to 28+ countries
-              worldwide. Established 2013.
+              We grow, process, and export Karnataka ginger ourselves — direct from our farms to
+              28+ countries. No middlemen since 2013.
             </p>
             <div className="flex flex-wrap gap-2">
               {["FSSAI", "USDA Organic", "FDA", "ISO 22000", "APEDA"].map((badge) => (

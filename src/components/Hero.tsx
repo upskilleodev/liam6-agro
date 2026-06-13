@@ -3,9 +3,9 @@ import { WhatsAppLink } from "./WhatsAppLink";
 import { ArrowRight } from "./icons";
 
 const stats = [
-  { value: "28+", label: "Countries Served" },
+  { value: "28+", label: "Countries" },
   { value: "500+", label: "MT Exported" },
-  { value: "12", label: "Years of Trust" },
+  { value: "0", label: "Middlemen" },
 ];
 
 export function Hero() {
@@ -14,56 +14,71 @@ export function Hero() {
       id="home"
       className="relative z-10 flex-1 min-h-0 h-full flex flex-col grain overflow-hidden"
     >
-      <div
-        className="flex-1 min-h-0 h-full w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center py-16 pb-5 sm:py-20 sm:pb-6"
-      >
-        <div className="w-full max-w-3xl">
-          <p
-            className="text-gold text-[10px] sm:text-xs font-semibold uppercase mb-2 sm:mb-4 tracking-[0.14em] sm:tracking-[0.18em]"
-          >
-            Liam6 Agro · Exports — Est. 2013
-          </p>
+      <div className="flex-1 min-h-0 h-full w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center py-14 pb-4 sm:py-20 sm:pb-6">
+        <div className="w-full max-w-2xl lg:max-w-3xl">
+          {/* Eyebrow */}
+          <div className="flex items-center gap-3 mb-4 sm:mb-6 animate-fade-up">
+            <span className="h-px w-8 sm:w-12 bg-gold/70 shrink-0" aria-hidden="true" />
+            <p className="text-gold-light/90 text-[10px] sm:text-xs font-medium uppercase tracking-[0.22em] sm:tracking-[0.28em]">
+              We Grow · We Process · We Export
+            </p>
+          </div>
+
+          {/* Headline */}
           <h1
-            className="font-serif text-[clamp(1.85rem,7.5vw,4.25rem)] text-white leading-[1.05] font-semibold mb-2 sm:mb-4"
+            className="font-serif text-[clamp(2rem,7.2vw,4.5rem)] text-white leading-[1.02] font-semibold mb-3 sm:mb-5 animate-fade-up delay-100"
           >
-            From Fertile Soil
+            Karnataka Ginger,
             <br />
-            <span className="text-gold-light">to Global Tables.</span>
+            <span className="text-gold-light font-normal italic">from our farms to the world.</span>
           </h1>
-          <p className="text-white/80 text-sm sm:text-base leading-relaxed mb-4 sm:mb-6 max-w-xl line-clamp-4 sm:line-clamp-none">
-            Premium organic ginger, ginger coffee, and spices from Karnataka — export-grade
-            quality to 28+ countries worldwide.
+
+          <p
+            className="text-white/75 text-sm sm:text-base lg:text-lg leading-relaxed mb-6 sm:mb-8 max-w-md sm:max-w-xl font-light animate-fade-up delay-200"
+          >
+            No middlemen — we grow on our farms, process in our own facilities, and export
+            directly to importers worldwide. One company, one chain, from Karnataka soil to
+            global tables.
           </p>
-          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-4">
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-up delay-300">
             <WhatsAppLink
               message={whatsappMessages.quote}
-              ariaLabel="Request a quote on WhatsApp"
-              className="group inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 bg-orange-accent text-white rounded-full hover:bg-orange-warm transition-all text-sm font-semibold shadow-xl shadow-orange-accent/30 hover:shadow-orange-accent/50 active:scale-[0.98] w-full sm:w-auto"
+              ariaLabel="Request export quote on WhatsApp"
+              className="group inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-3.5 bg-gold text-green-deep rounded-sm hover:bg-gold-light transition-colors text-sm font-semibold tracking-wide shadow-lg shadow-black/20 active:scale-[0.98] w-full sm:w-auto"
             >
-              Request a Quote
-              <ArrowRight className="transition-transform group-hover:translate-x-1" />
+              Request Export Quote
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
             </WhatsAppLink>
             <a
               href="#products"
-              className="inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3 sm:py-3.5 border border-white/40 text-white rounded-full hover:bg-white/10 hover:border-white/60 transition-all text-sm font-medium backdrop-blur-sm w-full sm:w-auto"
+              className="group inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 text-white/90 text-sm font-medium tracking-wide border border-white/25 rounded-sm hover:border-gold/50 hover:text-gold-light transition-colors backdrop-blur-[2px] w-full sm:w-auto"
             >
-              Explore Products
+              View Product Range
+              <span
+                className="inline-block w-4 h-px bg-white/40 group-hover:bg-gold-light group-hover:w-5 transition-all"
+                aria-hidden="true"
+              />
             </a>
           </div>
 
+          {/* Stats — editorial panel */}
           <div
-            className="mt-5 sm:mt-8 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:gap-0 sm:divide-x sm:divide-white/15"
+            className="mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/10 animate-fade-up delay-400"
           >
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center sm:text-left sm:px-8 first:sm:pl-0">
-                <p className="font-serif text-xl sm:text-2xl lg:text-3xl text-white font-semibold tabular-nums">
-                  {stat.value}
-                </p>
-                <p className="text-white/55 text-[9px] sm:text-[10px] tracking-[0.12em] sm:tracking-[0.16em] uppercase mt-0.5 font-medium leading-tight">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
+            <div className="grid grid-cols-3 gap-3 sm:gap-6 max-w-md sm:max-w-lg">
+              {stats.map((stat) => (
+                <div key={stat.label} className="text-center sm:text-left">
+                  <p className="font-serif text-2xl sm:text-3xl lg:text-4xl text-white font-semibold tabular-nums leading-none">
+                    {stat.value}
+                  </p>
+                  <p className="text-gold-light/60 text-[9px] sm:text-[10px] tracking-[0.18em] uppercase mt-1.5 font-medium">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

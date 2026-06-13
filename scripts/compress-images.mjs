@@ -11,7 +11,8 @@ const IMAGES_DIR = path.join(process.cwd(), "public/images");
 function maxWidthFor(file) {
   if (file.startsWith("product-")) return 800;
   if (file.startsWith("bg-")) return 1600;
-  if (file === "hero.png") return 1920;
+  if (file === "hero.png" || file === "hero-desktop.png") return 1920;
+  if (file === "hero-mobile.png") return 1080;
   return 1280;
 }
 

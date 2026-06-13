@@ -29,14 +29,15 @@ export function CTA() {
 
           <div className="relative p-6 sm:p-12 lg:p-16 text-center">
             <p className="text-gold text-[11px] font-semibold tracking-[0.25em] uppercase mb-4">
-              Partner With Us
+              Direct Farm Production & Export
             </p>
             <h2 className="font-serif text-[clamp(1.75rem,4vw,2.75rem)] text-white font-semibold mb-4 leading-tight max-w-2xl mx-auto">
-              Ready to Source Premium Agro Products?
+              Buy Direct From the Producers
             </h2>
             <p className="text-white/75 text-base sm:text-lg mb-10 max-w-lg mx-auto leading-relaxed">
-              Reliable supply, certified quality, and seamless international logistics — chat with
-              our export team on WhatsApp for quotes and orders.
+              We grow, process, and export ourselves — no middlemen between our farms and your
+              business. Speak directly with our export team for quotes, certifications, and
+              shipping to your port.
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 max-w-md sm:max-w-none mx-auto">

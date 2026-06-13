@@ -14,11 +14,11 @@ const features = [
   },
   {
     icon: PlantIcon,
-    title: "Farm to Export",
-    stat: "0",
-    statLabel: "Middlemen",
+    title: "Grow · Process · Export",
+    stat: "100%",
+    statLabel: "In-House",
     description:
-      "Direct sourcing from Karnataka farming communities with full traceability — from soil to shipment, with fair practices at every step.",
+      "We own the chain — our farms, our processing units, our export desk. Ginger is grown, washed, graded, packed, and shipped by our team with zero middlemen in between.",
   },
   {
     icon: GlobeIcon,
@@ -26,7 +26,7 @@ const features = [
     stat: "28+",
     statLabel: "Countries",
     description:
-      "Seamless cold-chain freight, customs handling, and APEDA documentation — we manage port logistics end-to-end for worry-free imports.",
+      "We manage cold-chain freight, customs, and APEDA documentation ourselves — your ginger ships from our export desk straight to your port.",
   },
 ];
 
@@ -53,6 +53,7 @@ export function WhyTrustUs() {
         <SectionHeader
           eyebrow="The Liam6 Standard"
           title="Why The World Trusts Us"
+          description="Importers choose us because we control every step — cultivation, processing, documentation, and export — without relying on traders or brokers."
           align="center"
           light
         />

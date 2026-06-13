@@ -28,7 +28,6 @@ export const backgrounds = {
   about: local("bg-about"),
   cta: local("bg-cta"),
   certifications: local("bg-certifications"),
-  heroFarm: local("bg-hero-farm"),
   farmingPattern: local("bg-farming-pattern"),
   journeyPattern: local("bg-journey-pattern"),
   productsPattern: local("bg-products-pattern"),
@@ -36,24 +35,18 @@ export const backgrounds = {
 
 /** Hyper-realistic journey / process photography */
 export const sections = {
-  hero: local("hero"),
+  hero: local("hero-desktop"),
+  heroDesktop: local("hero-desktop"),
+  heroMobile: local("hero-mobile"),
   journeyFarm: local("journey-farm"),
   journeyHarvest: local("journey-harvest"),
   journeyWashing: local("journey-washing"),
   journeyGrading: local("journey-grading"),
-  journeyLab: local("journey-lab"),
   journeyExport: local("journey-export"),
   journeyShipping: local("journey-shipping"),
   journeyGlobal: local("journey-global"),
   indianFarmer: local("indian-farmer"),
   gingerCloseUp: local("ginger-closeup"),
-  // Legacy aliases
-  karnatakaFarm: local("journey-farm"),
-  harvestHands: local("journey-harvest"),
-  processing: local("journey-grading"),
-  labQuality: local("journey-lab"),
-  shipping: local("journey-shipping"),
-  worldTrade: local("journey-global"),
 } as const;
 
 export const images = {
@@ -72,7 +65,6 @@ export const images = {
   gingerCoffee: products.gingerCoffee,
   coffeeGinger: products.gingerCoffee,
   processing: sections.journeyGrading,
-  labQuality: sections.journeyLab,
   shipping: sections.journeyShipping,
   portLogistics: sections.journeyShipping,
   spiceBlend: products.spiceBlend,
@@ -84,7 +76,6 @@ export const images = {
   bgAbout: backgrounds.about,
   bgCta: backgrounds.cta,
   bgCertifications: backgrounds.certifications,
-  bgHeroFarm: backgrounds.heroFarm,
   bgFarmingPattern: backgrounds.farmingPattern,
   bgJourneyPattern: backgrounds.journeyPattern,
   bgProductsPattern: backgrounds.productsPattern,

@@ -12,6 +12,7 @@
     "generate-icons": "node scripts/generate-icons.mjs",
     "generate-logo": "node scripts/generate-logo.mjs",
     "generate-journey": "node scripts/generate-journey-images.mjs",
+    "generate-hero": "node scripts/generate-hero-images.mjs",
     "generate-farming-bg": "node scripts/generate-farming-backgrounds.mjs",
     "compress-images": "node scripts/compress-images.mjs"
   },

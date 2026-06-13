@@ -3,13 +3,13 @@ import { backgrounds } from "@/lib/images";
 import { GlobeIcon } from "./icons";
 
 const highlights = [
+  "No Middlemen · Direct Export",
+  "We Grow · We Process · We Ship",
   "Liam6 Agro Exports",
-  "Karnataka Ginger Worldwide",
-  "Premium Organic Exports",
-  "Established 2013",
+  "Farm to World Since 2013",
   "28+ Countries Served",
-  "Farm to Global Tables",
-  "Direct Farm Sourcing",
+  "Our Farms · Our Facilities",
+  "Direct to Importers Worldwide",
   "Export-Grade Quality",
 ];
 

@@ -23,16 +23,16 @@ export const viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://liam6agro.com"),
-  title: "Liam6Agro Exports | Premium Ginger from Karnataka to the World",
+  title: "Liam6Agro Exports | Direct Farm-to-World Ginger Export",
   description:
-    "Export-grade organic ginger, ginger coffee, and spices from Karnataka's fertile lands to 28+ countries. FSSAI, USDA Organic, FDA approved.",
+    "We grow, process, and export premium Karnataka ginger worldwide — no middlemen. Farm to port, direct to importers in 28+ countries since 2013.",
   icons: {
     icon: [{ url: "/icons/logo-emblem.png", type: "image/png" }],
     apple: [{ url: "/icons/apple-icon.png", type: "image/png" }],
   },
   openGraph: {
     title: "Liam6Agro Exports",
-    description: "From fertile soil to global tables — premium ginger exports since 2013.",
+    description: "We grow, process, and export Karnataka ginger direct to the world — no middlemen since 2013.",
     type: "website",
     images: [{ url: "/icons/og-image.png", width: 1536, height: 1024 }],
   },
